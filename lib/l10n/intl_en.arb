@@ -1,0 +1,21 @@
+{
+  "@@locale": "en",
+  "@@context": "intl",
+  "beCreative": "Be Creative :P",
+  "@beCreative": {},
+  "add": "Add",
+  "@add": {},
+  "resultSpinResult": "Result: {result}",
+  "@resultSpinResult": {
+    "description": "resultSpinResult",
+    "placeholders": {
+      "result": {}
+    }
+  },
+  "spinTheWheel": "Spin the wheel!",
+  "@spinTheWheel": {},
+  "spin": "Spin",
+  "@spin": {},
+  "enterAnItem": "Enter an item",
+  "@enterAnItem": {}
+}

@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:roulette/roulette.dart';
 
 class RouletteWidget extends StatefulWidget {
@@ -23,46 +23,59 @@ class _RouletteWidgetState extends State<RouletteWidget> {
   Widget build(BuildContext context) {
     final group = RouletteGroup.uniform(
       widget.rouletteItems.length,
-      textBuilder: (index) => widget.rouletteItems[index],
+      textBuilder: (index) => (index + 1).toString(),
     );
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      spacing: 20,
       children: [
-        Stack(alignment: Alignment.topCenter, children: [
-          SizedBox(
-              width: 260,
-              height: 260,
-              child: Padding(
-                  padding: const EdgeInsets.only(top: 30),
-                  child: Roulette(
-                    group: group,
-                    controller: controller,
-                    style: const RouletteStyle(
-                      dividerThickness: 0.0,
-                      dividerColor: Colors.black,
-                      centerStickSizePercent: 0.05,
-                      centerStickerColor: Colors.black,
-                    ),
-                  ))),
-          const Arrow(),
-        ]),
-        CupertinoButton(
-          child: const Text('Spin'),
-          onPressed: () {
-            final target = Random().nextInt(widget.rouletteItems.length);
-            final duration = Duration(seconds: 3 + Random().nextInt(2));
-            controller.rollTo(target,
-                duration: duration, offset: Random().nextDouble());
-            () async {
-              await Future.delayed(duration);
-              setState(() {
-                spinResult = widget.rouletteItems[target];
-              });
-            }();
-          },
+        if (spinResult != null)
+          Text(AppLocalizations.of(context)!.resultSpinResult(spinResult!),
+              style: Theme.of(context).textTheme.headlineMedium),
+        if (spinResult == null)
+          Text(AppLocalizations.of(context)!.spinTheWheel,
+              style: Theme.of(context).textTheme.headlineMedium),
+        SizedBox(
+          height: 300,
+          child: Stack(alignment: Alignment.topCenter, children: [
+            SizedBox(
+                width: 260,
+                height: 260,
+                child: Padding(
+                    padding: const EdgeInsets.only(top: 30),
+                    child: Roulette(
+                      group: group,
+                      controller: controller,
+                      style: RouletteStyle(
+                        dividerThickness: 0.0,
+                        dividerColor: Theme.of(context).colorScheme.onSurface,
+                        centerStickSizePercent: 0.05,
+                        centerStickerColor:
+                            Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ))),
+            const Arrow(),
+            Positioned(
+              top: 120,
+              child: FloatingActionButton(
+                child: Text(AppLocalizations.of(context)!.spin),
+                onPressed: () {
+                  final target = Random().nextInt(widget.rouletteItems.length);
+                  final duration = Duration(seconds: 3 + Random().nextInt(2));
+                  controller.rollTo(target,
+                      duration: duration, offset: Random().nextDouble());
+                  () async {
+                    await Future.delayed(duration);
+                    setState(() {
+                      spinResult = widget.rouletteItems[target];
+                    });
+                  }();
+                },
+              ),
+            ),
+          ]),
         ),
-        if (spinResult != null) Text('Result: $spinResult'),
       ],
     );
   }
@@ -76,14 +89,21 @@ class Arrow extends StatelessWidget {
     return SizedBox(
       width: 20,
       height: 36,
-      child: CustomPaint(painter: _ArrowPainter()),
+      child: CustomPaint(
+          painter: _ArrowPainter(
+        color: Theme.of(context).colorScheme.tertiary,
+      )),
     );
   }
 }
 
 class _ArrowPainter extends CustomPainter {
-  final _paint = Paint()
-    ..color = Colors.amber
+  _ArrowPainter({required this.color});
+
+  final Color color;
+
+  get _paint => Paint()
+    ..color = color
     ..style = PaintingStyle.fill;
 
   @override

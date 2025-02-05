@@ -1,5 +1,4 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 import 'package:webroulette/widgets/editing_widget.dart';
 import 'package:webroulette/widgets/roulette_widget.dart';
 
@@ -16,35 +15,34 @@ class RouletteScreen extends StatelessWidget {
       rouletteItems = items.split(',');
     }
 
-    return CupertinoPageScaffold(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            SizedBox(
-              width: 600,
-              child: EditingWidget(
-                items: rouletteItems,
-                onItemsChanged: (items) => Navigator.pushReplacementNamed(
-                  context,
-                  '?${createQueryFromItems(items)}',
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      body: Center(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            spacing: 20,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const SizedBox(height: 40),
+              SizedBox(
+                width: 600,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: EditingWidget(
+                    items: rouletteItems,
+                    onItemsChanged: (items) => Navigator.pushReplacementNamed(
+                      context,
+                      '?${createQueryFromItems(items)}',
+                    ),
+                    backgroundColor: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            CupertinoButton(
-              child: const Text('Copy URL'),
-              onPressed: () {
-                final uri =
-                    pageURL.replace(query: createQueryFromItems(rouletteItems));
-                Clipboard.setData(ClipboardData(text: uri.toString()));
-              },
-            ),
-            const SizedBox(height: 20),
-            if (rouletteItems.length > 3)
-              RouletteWidget(rouletteItems: rouletteItems),
-          ],
+              if (rouletteItems.length > 1)
+                RouletteWidget(rouletteItems: rouletteItems),
+            ],
+          ),
         ),
       ),
     );

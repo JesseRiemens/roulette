@@ -1,0 +1,10 @@
+{
+    "@@locale": "nl",
+    "@@context": "intl",
+    "beCreative": "Wees creatief :P",
+    "add": "Voeg toe",
+    "resultSpinResult": "Resultaat: {result}",
+    "spinTheWheel": "Draai aan het wiel!",
+    "spin": "Draai",
+    "enterAnItem": "Voer een item in"
+}
