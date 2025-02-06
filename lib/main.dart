@@ -1,6 +1,6 @@
 import 'dart:html';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:webroulette/screens/roulette_screen.dart';
 
@@ -14,7 +14,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoApp(
+    return MaterialApp(
+      theme: ThemeData.from(
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.deepPurple, brightness: Brightness.dark)),
       title: 'Roulette',
       onGenerateRoute: (settings) => CustomPageRoute(
         builder: (context) =>
@@ -22,11 +25,14 @@ class MainApp extends StatelessWidget {
         settings: settings,
       ),
       initialRoute: '',
+      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+        DefaultMaterialLocalizations.delegate,
+      ],
     );
   }
 }
 
-class CustomPageRoute extends CupertinoPageRoute {
+class CustomPageRoute extends MaterialPageRoute {
   CustomPageRoute({
     builder,
     settings,

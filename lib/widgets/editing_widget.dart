@@ -1,59 +1,100 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class EditingWidget extends StatelessWidget {
   const EditingWidget(
       {Key? key,
-      required List<String> items,
-      required Function(List<String>) onItemsChanged})
-      : _items = items,
-        _onItemsChanged = onItemsChanged,
-        super(key: key);
+      required this.items,
+      required this.onItemsChanged,
+      required this.backgroundColor})
+      : super(key: key);
 
-  final List<String> _items;
-  final Function(List<String>) _onItemsChanged;
+  final List<String> items;
+  final Function(List<String>) onItemsChanged;
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
     TextEditingController controller = TextEditingController();
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        CupertinoTextField(
-          controller: controller,
-          placeholder: 'Vul item in',
-          onSubmitted: (String value) {
-            _onItemsChanged([..._items, value]);
-          },
+    TextStyle unifiedTextStyle = TextStyle(
+        color: Theme.of(context).colorScheme.onPrimaryContainer, fontSize: 16);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        border: Border.all(
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          width: 2,
         ),
-        CupertinoButton(
-          child: const Text('Voeg toe'),
-          onPressed: () {
-            if (controller.text.isNotEmpty) {
-              _onItemsChanged([..._items, controller.text]);
-              controller.clear();
-            }
-          },
-        ),
-        ListView.builder(
-          shrinkWrap: true,
-          itemCount: _items.length,
-          itemBuilder: (context, index) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(_items[index]),
-                CupertinoButton(
-                  child: const Text('Verwijder'),
-                  onPressed: () {
-                    _onItemsChanged([..._items]..removeAt(index));
-                  },
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              height: 75,
+              child: TextField(
+                decoration: InputDecoration(
+                  hintStyle: unifiedTextStyle.copyWith(color: Colors.grey),
+                  hintText: 'Wees creatief :P',
+                  contentPadding: const EdgeInsets.all(8),
+                  label: Text('Voer een item in', style: unifiedTextStyle),
+                  alignLabelWithHint: true,
                 ),
-              ],
-            );
-          },
+                controller: controller,
+                style: unifiedTextStyle,
+                onSubmitted: (String value) {
+                  onItemsChanged([...items, value]);
+                },
+                expands: true,
+                minLines: null,
+                maxLines: null,
+              ),
+            ),
+            const SizedBox(height: 10),
+            OutlinedButton(
+              onPressed: () {
+                if (controller.text.isNotEmpty) {
+                  onItemsChanged([...items, controller.text]);
+                  controller.clear();
+                }
+              },
+              child: Text('Voeg toe', style: unifiedTextStyle),
+            ),
+            const SizedBox(height: 10),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${index + 1}: ${items[index]}',
+                        style: unifiedTextStyle,
+                        overflow: TextOverflow.visible,
+                        softWrap: true,
+                      ),
+                    ),
+                    TextButton(
+                      child: const Icon(
+                        Icons.remove_circle_outline_sharp,
+                      ),
+                      onPressed: () {
+                        onItemsChanged([...items]..removeAt(index));
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
