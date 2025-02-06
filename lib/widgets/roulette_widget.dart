@@ -22,7 +22,7 @@ class _RouletteWidgetState extends State<RouletteWidget> {
   Widget build(BuildContext context) {
     final group = RouletteGroup.uniform(
       widget.rouletteItems.length,
-      textBuilder: (index) => index.toString(),
+      textBuilder: (index) => (index + 1).toString(),
     );
 
     return Column(
