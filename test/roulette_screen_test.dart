@@ -10,31 +10,29 @@ void main() {
   testWidgets(
       'RouletteScreen shows EditingWidget and RouletteWidget conditionally',
       (WidgetTester tester) async {
-    final uri = Uri.parse('https://test?items=A,B');
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: const [
+    await tester.pumpWidget(const MaterialApp(
+      localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         AppLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('en')],
-      locale: const Locale('en'),
-      home: RouletteScreen(pageURL: uri),
+      supportedLocales: [Locale('en')],
+      locale: Locale('en'),
+      home: RouletteScreen(),
     ));
     expect(find.byType(EditingWidget), findsOneWidget);
     expect(find.byType(RouletteWidget), findsOneWidget);
 
     // With only one item, RouletteWidget should not be shown
-    final uri2 = Uri.parse('https://test?items=A');
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: const [
+    await tester.pumpWidget(const MaterialApp(
+      localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         AppLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('en')],
-      locale: const Locale('en'),
-      home: RouletteScreen(pageURL: uri2),
+      supportedLocales: [Locale('en')],
+      locale: Locale('en'),
+      home: RouletteScreen(),
     ));
     expect(find.byType(EditingWidget), findsOneWidget);
     expect(find.byType(RouletteWidget), findsNothing);

@@ -1,14 +1,38 @@
-import 'dart:html';
+import 'dart:developer';
+import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:webroulette/bloc/storage_bloc.dart';
 import 'package:webroulette/l10n/app_localizations.dart';
 import 'package:webroulette/screens/roulette_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: kIsWeb
+        ? HydratedStorageDirectory.web
+        : HydratedStorageDirectory((await getTemporaryDirectory()).path),
+  );
   usePathUrlStrategy();
-  runApp(const MainApp());
+
+  StorageCubit? storageCubit;
+  if (urlStrategy!.getPath() != '/') {
+    log('Path: ${urlStrategy!.getPath()}');
+    storageCubit = StorageCubit.fromUrl(urlStrategy!.getPath().substring(1));
+  }
+
+  runApp(
+    BlocProvider(
+      create: (_) => storageCubit ?? StorageCubit(),
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -22,8 +46,7 @@ class MainApp extends StatelessWidget {
               seedColor: Colors.deepPurple, brightness: Brightness.dark)),
       title: 'Roulette',
       onGenerateRoute: (settings) => CustomPageRoute(
-        builder: (context) =>
-            RouletteScreen(pageURL: Uri.parse(window.location.href)),
+        builder: (context) => const RouletteScreen(),
         settings: settings,
       ),
       initialRoute: '',
@@ -41,7 +64,7 @@ class MainApp extends StatelessWidget {
         }
         return supportedLocales.first;
       },
-      locale: Locale(window.navigator.language.split('-').first),
+      locale: Locale(PlatformDispatcher.instance.locale.languageCode),
     );
   }
 }
