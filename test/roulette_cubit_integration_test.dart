@@ -7,7 +7,12 @@ import 'package:webroulette/l10n/app_localizations.dart';
 import 'package:webroulette/screens/roulette_screen.dart';
 import 'package:webroulette/widgets/roulette_widget.dart';
 
+import 'test_helpers.dart';
+
 void main() {
+  setUpAll(() async {
+    await initHydratedStorage();
+  });
   testWidgets('EditingWidget and RouletteWidget update via cubit',
       (WidgetTester tester) async {
     await tester.pumpWidget(
@@ -41,7 +46,15 @@ void main() {
 
     // Now, RouletteWidget should be shown
     expect(find.byType(RouletteWidget), findsOneWidget);
-    expect(find.textContaining('Apple'), findsOneWidget);
-    expect(find.textContaining('Banana'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate((widget) =>
+          widget is RichText && widget.text.toPlainText().contains('Apple')),
+      findsOneWidget,
+    );
+    expect(
+      find.byWidgetPredicate((widget) =>
+          widget is RichText && widget.text.toPlainText().contains('Banana')),
+      findsOneWidget,
+    );
   });
 }

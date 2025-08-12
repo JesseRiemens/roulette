@@ -8,7 +8,12 @@ import 'package:webroulette/screens/roulette_screen.dart';
 import 'package:webroulette/widgets/editing_widget.dart';
 import 'package:webroulette/widgets/roulette_widget.dart';
 
+import 'test_helpers.dart';
+
 void main() {
+  setUpAll(() async {
+    await initHydratedStorage();
+  });
   testWidgets(
       'RouletteScreen shows EditingWidget and RouletteWidget conditionally (Cubit)',
       (WidgetTester tester) async {

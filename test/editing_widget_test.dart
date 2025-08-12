@@ -26,9 +26,17 @@ void main() {
       ),
     ));
 
-    // Items are displayed
-    expect(find.text('1: A'), findsOneWidget);
-    expect(find.text('2: B'), findsOneWidget);
+    // Items are displayed (RichText)
+    expect(
+      find.byWidgetPredicate((widget) =>
+          widget is RichText && widget.text.toPlainText().contains('1: A')),
+      findsOneWidget,
+    );
+    expect(
+      find.byWidgetPredicate((widget) =>
+          widget is RichText && widget.text.toPlainText().contains('2: B')),
+      findsOneWidget,
+    );
 
     // Add item
     await tester.enterText(find.byType(TextField), 'C');

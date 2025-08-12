@@ -139,22 +139,29 @@ class _EditingWidgetState extends State<EditingWidget> {
                             widget.onItemsChanged(List<String>.from(_items));
                           },
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            '${index + 1}: ',
-                            style: unifiedTextStyle.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                          ),
-                        ),
                         Expanded(
-                          child: Text(
-                            _items[index],
-                            style: unifiedTextStyle,
-                            overflow: TextOverflow.visible,
-                            softWrap: true,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: '${index + 1}: ',
+                                    style: unifiedTextStyle.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: _items[index],
+                                    style: unifiedTextStyle,
+                                  ),
+                                ],
+                              ),
+                              overflow: TextOverflow.visible,
+                              softWrap: true,
+                            ),
                           ),
                         ),
                       ],
