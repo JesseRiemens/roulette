@@ -11,8 +11,8 @@ import 'package:webroulette/widgets/roulette_widget.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(RouletteWidget(
-      rouletteItems: const ['apple', 'banana', 'orange'],
+    await tester.pumpWidget(const RouletteWidget(
+      rouletteItems: ['apple', 'banana', 'orange'],
     ));
 
     expect(find.text('apple, banana, orange'), findsOneWidget);

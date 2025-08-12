@@ -11,8 +11,12 @@ class RouletteScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     List<String> rouletteItems = [];
     final items = pageURL.queryParameters['items'];
-    if (items != null) {
-      rouletteItems = items.split(',');
+    if (items != null && items.isNotEmpty) {
+      rouletteItems = items
+          .split(',')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
     }
 
     return Scaffold(
@@ -49,4 +53,16 @@ class RouletteScreen extends StatelessWidget {
   }
 
   String createQueryFromItems(List<String> items) => 'items=${items.join(',')}';
+}
+
+@immutable
+class Query {
+  Query.fromUri(this.pageURL)
+      : rouletteItems = pageURL.queryParameters['items']?.split(',') ?? [];
+
+  Query.fromItems(this.rouletteItems)
+      : pageURL = Uri(queryParameters: {'items': rouletteItems.join(',')});
+
+  final Uri pageURL;
+  final List<String> rouletteItems;
 }

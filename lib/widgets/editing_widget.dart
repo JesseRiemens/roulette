@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:webroulette/l10n/app_localizations.dart';
 
 class EditingWidget extends StatelessWidget {
   const EditingWidget(
@@ -41,13 +41,16 @@ class EditingWidget extends StatelessWidget {
                   hintStyle: unifiedTextStyle.copyWith(color: Colors.grey),
                   hintText: AppLocalizations.of(context)!.beCreative,
                   contentPadding: const EdgeInsets.all(8),
-                  label: Text(AppLocalizations.of(context)!.enterAnItem, style: unifiedTextStyle),
+                  label: Text(AppLocalizations.of(context)!.enterAnItem,
+                      style: unifiedTextStyle),
                   alignLabelWithHint: true,
                 ),
                 controller: controller,
                 style: unifiedTextStyle,
                 onSubmitted: (String value) {
-                  onItemsChanged([...items, value]);
+                  if (value.trim().isNotEmpty) {
+                    onItemsChanged([...items, value.trim()]);
+                  }
                 },
                 expands: true,
                 minLines: null,
@@ -57,12 +60,13 @@ class EditingWidget extends StatelessWidget {
             const SizedBox(height: 10),
             OutlinedButton(
               onPressed: () {
-                if (controller.text.isNotEmpty) {
-                  onItemsChanged([...items, controller.text]);
+                if (controller.text.trim().isNotEmpty) {
+                  onItemsChanged([...items, controller.text.trim()]);
                   controller.clear();
                 }
               },
-              child: Text(AppLocalizations.of(context)!.add, style: unifiedTextStyle),
+              child: Text(AppLocalizations.of(context)!.add,
+                  style: unifiedTextStyle),
             ),
             const SizedBox(height: 10),
             ListView.builder(
