@@ -9,10 +9,16 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get add => 'Add';
+
+  @override
   String get beCreative => 'Be Creative :P';
 
   @override
-  String get add => 'Add';
+  String get edit => 'Edit';
+
+  @override
+  String get enterAnItem => 'Enter an item';
 
   @override
   String resultSpinResult(Object result) {
@@ -20,11 +26,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get spinTheWheel => 'Spin the wheel!';
-
-  @override
   String get spin => 'Spin';
 
   @override
-  String get enterAnItem => 'Enter an item';
+  String get spinTheWheel => 'Spin the wheel!';
 }

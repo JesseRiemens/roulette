@@ -98,17 +98,29 @@ abstract class AppLocalizations {
     Locale('en')
   ];
 
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
   /// No description provided for @beCreative.
   ///
   /// In en, this message translates to:
   /// **'Be Creative :P'**
   String get beCreative;
 
-  /// No description provided for @add.
+  /// No description provided for @edit.
   ///
   /// In en, this message translates to:
-  /// **'Add'**
-  String get add;
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @enterAnItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an item'**
+  String get enterAnItem;
 
   /// resultSpinResult
   ///
@@ -116,23 +128,17 @@ abstract class AppLocalizations {
   /// **'Result: {result}'**
   String resultSpinResult(Object result);
 
-  /// No description provided for @spinTheWheel.
-  ///
-  /// In en, this message translates to:
-  /// **'Spin the wheel!'**
-  String get spinTheWheel;
-
   /// No description provided for @spin.
   ///
   /// In en, this message translates to:
   /// **'Spin'**
   String get spin;
 
-  /// No description provided for @enterAnItem.
+  /// No description provided for @spinTheWheel.
   ///
   /// In en, this message translates to:
-  /// **'Enter an item'**
-  String get enterAnItem;
+  /// **'Spin the wheel!'**
+  String get spinTheWheel;
 }
 
 class _AppLocalizationsDelegate

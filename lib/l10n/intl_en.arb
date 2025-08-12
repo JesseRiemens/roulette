@@ -1,10 +1,14 @@
 {
   "@@locale": "en",
   "@@context": "intl",
-  "beCreative": "Be Creative :P",
-  "@beCreative": {},
   "add": "Add",
   "@add": {},
+  "beCreative": "Be Creative :P",
+  "@beCreative": {},
+  "edit": "Edit",
+  "@edit": {},
+  "enterAnItem": "Enter an item",
+  "@enterAnItem": {},
   "resultSpinResult": "Result: {result}",
   "@resultSpinResult": {
     "description": "resultSpinResult",
@@ -12,10 +16,8 @@
       "result": {}
     }
   },
-  "spinTheWheel": "Spin the wheel!",
-  "@spinTheWheel": {},
   "spin": "Spin",
   "@spin": {},
-  "enterAnItem": "Enter an item",
-  "@enterAnItem": {}
+  "spinTheWheel": "Spin the wheel!",
+  "@spinTheWheel": {}
 }

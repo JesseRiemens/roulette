@@ -1,3 +1,5 @@
+import 'dart:ui_web';
+
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:webroulette/utils/url_utils.dart';
 
@@ -10,6 +12,7 @@ class StorageCubit extends HydratedCubit<List<String>> {
 
   void saveItems(List<String> items) {
     emit(items);
+    urlStrategy!.pushState('', '', '/${toUrl()}');
   }
 
   @override

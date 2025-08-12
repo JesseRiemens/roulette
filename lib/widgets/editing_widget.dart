@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:webroulette/l10n/app_localizations.dart';
 
-class EditingWidget extends StatelessWidget {
+class EditingWidget extends StatefulWidget {
   const EditingWidget(
       {Key? key,
       required this.items,
@@ -14,10 +14,33 @@ class EditingWidget extends StatelessWidget {
   final Color backgroundColor;
 
   @override
+  State<EditingWidget> createState() => _EditingWidgetState();
+}
+
+class _EditingWidgetState extends State<EditingWidget> {
+  late List<String> _items;
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _items = List<String>.from(widget.items);
+  }
+
+  @override
+  void didUpdateWidget(covariant EditingWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.items != widget.items) {
+      _items = List<String>.from(widget.items);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    TextEditingController controller = TextEditingController();
     TextStyle unifiedTextStyle = TextStyle(
-        color: Theme.of(context).colorScheme.onPrimaryContainer, fontSize: 16);
+      color: Theme.of(context).colorScheme.onPrimaryContainer,
+      fontSize: 16,
+    );
 
     return Container(
       decoration: BoxDecoration(
@@ -45,11 +68,15 @@ class EditingWidget extends StatelessWidget {
                       style: unifiedTextStyle),
                   alignLabelWithHint: true,
                 ),
-                controller: controller,
+                controller: _controller,
                 style: unifiedTextStyle,
                 onSubmitted: (String value) {
                   if (value.trim().isNotEmpty) {
-                    onItemsChanged([...items, value.trim()]);
+                    setState(() {
+                      _items.add(value.trim());
+                    });
+                    widget.onItemsChanged(List<String>.from(_items));
+                    _controller.clear();
                   }
                 },
                 expands: true,
@@ -60,42 +87,80 @@ class EditingWidget extends StatelessWidget {
             const SizedBox(height: 10),
             OutlinedButton(
               onPressed: () {
-                if (controller.text.trim().isNotEmpty) {
-                  onItemsChanged([...items, controller.text.trim()]);
-                  controller.clear();
+                if (_controller.text.trim().isNotEmpty) {
+                  setState(() {
+                    _items.add(_controller.text.trim());
+                  });
+                  widget.onItemsChanged(List<String>.from(_items));
+                  _controller.clear();
                 }
               },
               child: Text(AppLocalizations.of(context)!.add,
                   style: unifiedTextStyle),
             ),
             const SizedBox(height: 10),
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '${index + 1}: ${items[index]}',
-                        style: unifiedTextStyle,
-                        overflow: TextOverflow.visible,
-                        softWrap: true,
-                      ),
+            SizedBox(
+              height: (_items.length * 48.0).clamp(48.0, 300.0),
+              child: ReorderableListView(
+                shrinkWrap: true,
+                buildDefaultDragHandles: true,
+                onReorder: (int oldIndex, int newIndex) {
+                  setState(() {
+                    if (newIndex > oldIndex) newIndex--;
+                    final item = _items.removeAt(oldIndex);
+                    _items.insert(newIndex, item);
+                  });
+                  widget.onItemsChanged(List<String>.from(_items));
+                },
+                children: [
+                  for (int index = 0; index < _items.length; index++)
+                    Row(
+                      key: ValueKey('item_$index'),
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.remove_circle_outline_sharp),
+                          onPressed: () {
+                            setState(() {
+                              _items.removeAt(index);
+                            });
+                            widget.onItemsChanged(List<String>.from(_items));
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          tooltip: AppLocalizations.of(context)!.edit,
+                          onPressed: () {
+                            setState(() {
+                              _controller.text = _items[index];
+                              _items.removeAt(index);
+                            });
+                            widget.onItemsChanged(List<String>.from(_items));
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            '${index + 1}: ',
+                            style: unifiedTextStyle.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            _items[index],
+                            style: unifiedTextStyle,
+                            overflow: TextOverflow.visible,
+                            softWrap: true,
+                          ),
+                        ),
+                      ],
                     ),
-                    TextButton(
-                      child: const Icon(
-                        Icons.remove_circle_outline_sharp,
-                      ),
-                      onPressed: () {
-                        onItemsChanged([...items]..removeAt(index));
-                      },
-                    ),
-                  ],
-                );
-              },
+                ],
+              ),
             ),
           ],
         ),
