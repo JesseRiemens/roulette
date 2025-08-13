@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -21,15 +20,9 @@ void main() async {
   );
   usePathUrlStrategy();
 
-  StorageCubit? storageCubit;
-  if (urlStrategy!.getPath() != '/') {
-    log('Path: ${urlStrategy!.getPath()}');
-    storageCubit = StorageCubit.fromUrl(urlStrategy!.getPath().substring(1));
-  }
-
   runApp(
     BlocProvider(
-      create: (_) => storageCubit ?? StorageCubit(),
+      create: (_) => kIsWeb ? StorageCubit.web() : StorageCubit(),
       child: const MainApp(),
     ),
   );
@@ -42,8 +35,11 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.from(
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.deepPurple, brightness: Brightness.dark)),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark,
+        ),
+      ),
       title: 'Roulette',
       onGenerateRoute: (settings) => CustomPageRoute(
         builder: (context) => const RouletteScreen(),
@@ -70,10 +66,8 @@ class MainApp extends StatelessWidget {
 }
 
 class CustomPageRoute extends MaterialPageRoute {
-  CustomPageRoute({
-    builder,
-    settings,
-  }) : super(builder: builder, settings: settings);
+  CustomPageRoute({builder, settings})
+    : super(builder: builder, settings: settings);
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 0);

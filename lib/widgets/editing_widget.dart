@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:webroulette/l10n/app_localizations.dart';
 
 class EditingWidget extends StatefulWidget {
-  const EditingWidget(
-      {Key? key,
-      required this.items,
-      required this.onItemsChanged,
-      required this.backgroundColor})
-      : super(key: key);
+  const EditingWidget({
+    Key? key,
+    required this.items,
+    required this.onItemsChanged,
+    required this.backgroundColor,
+  }) : super(key: key);
 
   final List<String> items;
   final Function(List<String>) onItemsChanged;
@@ -30,8 +30,11 @@ class _EditingWidgetState extends State<EditingWidget> {
   @override
   void didUpdateWidget(covariant EditingWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.items != widget.items) {
+    // Only update _items if the reference actually changed (not just content)
+    if (!identical(oldWidget.items, widget.items)) {
       _items = List<String>.from(widget.items);
+      // Optionally clear controller if items changed from parent
+      _controller.clear();
     }
   }
 
@@ -64,8 +67,10 @@ class _EditingWidgetState extends State<EditingWidget> {
                   hintStyle: unifiedTextStyle.copyWith(color: Colors.grey),
                   hintText: AppLocalizations.of(context)!.beCreative,
                   contentPadding: const EdgeInsets.all(8),
-                  label: Text(AppLocalizations.of(context)!.enterAnItem,
-                      style: unifiedTextStyle),
+                  label: Text(
+                    AppLocalizations.of(context)!.enterAnItem,
+                    style: unifiedTextStyle,
+                  ),
                   alignLabelWithHint: true,
                 ),
                 controller: _controller,
@@ -95,8 +100,10 @@ class _EditingWidgetState extends State<EditingWidget> {
                   _controller.clear();
                 }
               },
-              child: Text(AppLocalizations.of(context)!.add,
-                  style: unifiedTextStyle),
+              child: Text(
+                AppLocalizations.of(context)!.add,
+                style: unifiedTextStyle,
+              ),
             ),
             const SizedBox(height: 10),
             SizedBox(
@@ -149,8 +156,9 @@ class _EditingWidgetState extends State<EditingWidget> {
                                     text: '${index + 1}: ',
                                     style: unifiedTextStyle.copyWith(
                                       fontWeight: FontWeight.bold,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
                                     ),
                                   ),
                                   TextSpan(

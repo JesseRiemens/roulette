@@ -1,36 +1,53 @@
-import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:webroulette/utils/url_strategy_proxy.dart';
-import 'package:webroulette/utils/url_utils.dart';
+import 'dart:convert';
 
-class StorageCubit extends HydratedCubit<List<String>> {
-  StorageCubit([List<String> initialItems = const []]) : super(initialItems) {
-    if (initialItems.isNotEmpty) {
-      emit(initialItems);
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:webroulette/data/uri_storage.dart';
+
+part 'storage_bloc.freezed.dart';
+part 'storage_bloc.g.dart';
+
+class StorageCubit extends HydratedCubit<StoredItems> {
+  StorageCubit() : super(StoredItems.initial);
+
+  StorageCubit.web() : super(StoredItems.initial) {
+    if (uriStorage.queryParameters['items'] != null &&
+        uriStorage.queryParameters['items']!.isNotEmpty) {
+      final items = uriStorage.queryParameters['items']!
+          .map((item) => utf8.decode(base64Url.decode(item)))
+          .toList();
+      emit(state.copyWith(items: items));
     }
   }
 
   void saveItems(List<String> items) {
-    emit(items);
-    pushUrlState('/${toUrl()}');
+    emit(state.copyWith(items: items));
+    // ignore: avoid_print
+    print('[StorageCubit] Saving items: $items');
+    uriStorage.storeQueryParameters(state.toUriQueryParameters);
   }
+
+  Uri get uriWithData => uriStorage.uri;
 
   @override
-  List<String>? fromJson(Map<String, dynamic> json) {
-    print('fromJson called with: $json');
-    final items = (json['items'] as List<dynamic>?)!.cast<String>();
-    return items;
-  }
+  StoredItems? fromJson(Map<String, dynamic> json) =>
+      StoredItems.fromJson(json);
 
   @override
-  Map<String, dynamic>? toJson(List<String> state) {
-    print('toJson called with: $state');
-    return {'items': state};
-  }
+  Map<String, dynamic>? toJson(StoredItems state) => state.toJson();
+}
 
-  static StorageCubit fromUrl(String url) {
-    final items = UrlUtils.listFromUrl(url);
-    return StorageCubit(items);
-  }
+@freezed
+abstract class StoredItems with _$StoredItems {
+  const factory StoredItems({required List<String> items}) = _StoredItems;
+  const StoredItems._();
 
-  String toUrl() => UrlUtils.urlFromList(state);
+  static const initial = StoredItems(items: []);
+
+  factory StoredItems.fromJson(Map<String, dynamic> json) =>
+      _$StoredItemsFromJson(json);
+
+  Map<String, List<String>> get toUriQueryParameters => {
+    'items': items.map((item) => base64Url.encode(utf8.encode(item))).toList(),
+  };
 }
