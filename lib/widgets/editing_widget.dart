@@ -18,25 +18,53 @@ class EditingWidget extends StatefulWidget {
 }
 
 class _EditingWidgetState extends State<EditingWidget> {
-  late List<String> _items;
-  final TextEditingController _controller = TextEditingController();
+  late final TextEditingController textController;
+  late final FocusNode focusNode;
 
   @override
   void initState() {
     super.initState();
-    _items = List<String>.from(widget.items);
+    textController = TextEditingController();
+    focusNode = FocusNode();
   }
 
   @override
-  void didUpdateWidget(covariant EditingWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Only update _items if the reference actually changed (not just content)
-    if (!identical(oldWidget.items, widget.items)) {
-      _items = List<String>.from(widget.items);
-      // Optionally clear controller if items changed from parent
-      _controller.clear();
-    }
+  void dispose() {
+    textController.dispose();
+    focusNode.dispose();
+    super.dispose();
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return _EditingWidgetBody(
+      items: widget.items,
+      onItemsChanged: widget.onItemsChanged,
+      backgroundColor: widget.backgroundColor,
+      textController: textController,
+      focusNode: focusNode,
+    );
+  }
+}
+
+// Removed obsolete _EditingWidgetBodyState and old _EditingWidgetBody StatefulWidget
+
+// Move _EditingWidgetBody to top level
+class _EditingWidgetBody extends StatelessWidget {
+  const _EditingWidgetBody({
+    Key? key,
+    required this.items,
+    required this.onItemsChanged,
+    required this.backgroundColor,
+    required this.textController,
+    required this.focusNode,
+  }) : super(key: key);
+
+  final List<String> items;
+  final Function(List<String>) onItemsChanged;
+  final Color backgroundColor;
+  final TextEditingController textController;
+  final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -73,31 +101,35 @@ class _EditingWidgetState extends State<EditingWidget> {
                   ),
                   alignLabelWithHint: true,
                 ),
-                controller: _controller,
+                controller: textController,
+                focusNode: focusNode,
+                autofocus: true,
                 style: unifiedTextStyle,
                 onSubmitted: (String value) {
                   if (value.trim().isNotEmpty) {
-                    setState(() {
-                      _items.add(value.trim());
+                    final newItems = List<String>.from(items);
+                    newItems.add(value.trim());
+                    onItemsChanged(newItems);
+                    textController.clear();
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      focusNode.requestFocus();
                     });
-                    widget.onItemsChanged(List<String>.from(_items));
-                    _controller.clear();
                   }
                 },
-                expands: true,
-                minLines: null,
-                maxLines: null,
+                maxLines: 1,
               ),
             ),
             const SizedBox(height: 10),
             OutlinedButton(
               onPressed: () {
-                if (_controller.text.trim().isNotEmpty) {
-                  setState(() {
-                    _items.add(_controller.text.trim());
+                if (textController.text.trim().isNotEmpty) {
+                  final newItems = List<String>.from(items);
+                  newItems.add(textController.text.trim());
+                  onItemsChanged(newItems);
+                  textController.clear();
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    focusNode.requestFocus();
                   });
-                  widget.onItemsChanged(List<String>.from(_items));
-                  _controller.clear();
                 }
               },
               child: Text(
@@ -106,29 +138,33 @@ class _EditingWidgetState extends State<EditingWidget> {
               ),
             ),
             const SizedBox(height: 10),
-            buildListView(context, unifiedTextStyle),
+            _buildListView(context, unifiedTextStyle, items, onItemsChanged),
           ],
         ),
       ),
     );
   }
 
-  SizedBox buildListView(BuildContext context, TextStyle unifiedTextStyle) {
+  SizedBox _buildListView(
+    BuildContext context,
+    TextStyle unifiedTextStyle,
+    List<String> items,
+    Function(List<String>) onItemsChanged,
+  ) {
     return SizedBox(
-      height: (_items.length * 48.0).clamp(48.0, 300.0),
+      height: (items.length * 48.0).clamp(48.0, 300.0),
       child: ReorderableListView(
         buildDefaultDragHandles: false,
         shrinkWrap: true,
         onReorder: (int oldIndex, int newIndex) {
-          setState(() {
-            if (newIndex > oldIndex) newIndex--;
-            final item = _items.removeAt(oldIndex);
-            _items.insert(newIndex, item);
-          });
-          widget.onItemsChanged(List<String>.from(_items));
+          final newItems = List<String>.from(items);
+          if (newIndex > oldIndex) newIndex--;
+          final item = newItems.removeAt(oldIndex);
+          newItems.insert(newIndex, item);
+          onItemsChanged(newItems);
         },
         children: [
-          for (int index = 0; index < _items.length; index++)
+          for (int index = 0; index < items.length; index++)
             Row(
               key: ValueKey('item_$index'),
               mainAxisAlignment: MainAxisAlignment.start,
@@ -144,44 +180,67 @@ class _EditingWidgetState extends State<EditingWidget> {
                     ),
                   ),
                 ),
-                PopupMenuButton<String>(
-                  icon: const Icon(Icons.more_vert, size: 20),
-                  padding: EdgeInsets.zero,
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'edit',
-                      child: Row(
-                        children: [
-                          Icon(Icons.edit, size: 18),
-                          SizedBox(width: 8),
-                          Text('Edit'),
-                        ],
-                      ),
-                    ),
-                    const PopupMenuItem(
-                      value: 'remove',
-                      child: Row(
-                        children: [
-                          Icon(Icons.remove_circle_outline_sharp, size: 18),
-                          SizedBox(width: 8),
-                          Text('Remove'),
-                        ],
-                      ),
-                    ),
-                  ],
-                  onSelected: (value) {
-                    if (value == 'edit') {
-                      setState(() {
-                        _controller.text = _items[index];
-                        _items.removeAt(index);
-                      });
-                      widget.onItemsChanged(List<String>.from(_items));
-                    } else if (value == 'remove') {
-                      setState(() {
-                        _items.removeAt(index);
-                      });
-                      widget.onItemsChanged(List<String>.from(_items));
+                IconButton(
+                  icon: const Icon(Icons.edit, size: 20),
+                  tooltip: 'Edit',
+                  onPressed: () async {
+                    final newValue = await showDialog<String>(
+                      context: context,
+                      builder: (context) {
+                        final controller = TextEditingController(
+                          text: items[index],
+                        );
+                        return AlertDialog(
+                          title: const Text('Edit Item'),
+                          insetPadding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 80,
+                          ),
+                          content: SizedBox(
+                            width: 400,
+                            height: 120,
+                            child: TextField(
+                              controller: controller,
+                              autofocus: true,
+                              maxLines: null,
+                              expands: true,
+                              decoration: const InputDecoration(
+                                labelText: 'Edit Item',
+                              ),
+                              onSubmitted: (value) {
+                                Navigator.of(context).pop(value);
+                              },
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.of(context).pop(controller.text),
+                              child: const Text('Save'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                    if (newValue != null &&
+                        newValue.trim().isNotEmpty &&
+                        newValue != items[index]) {
+                      final newItems = List<String>.from(items);
+                      newItems[index] = newValue.trim();
+                      onItemsChanged(newItems);
                     }
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.remove_circle_outline_sharp, size: 20),
+                  tooltip: 'Remove',
+                  onPressed: () {
+                    final newItems = List<String>.from(items)..removeAt(index);
+                    onItemsChanged(newItems);
                   },
                 ),
                 Expanded(
@@ -200,10 +259,7 @@ class _EditingWidgetState extends State<EditingWidget> {
                               color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
-                          TextSpan(
-                            text: _items[index],
-                            style: unifiedTextStyle,
-                          ),
+                          TextSpan(text: items[index], style: unifiedTextStyle),
                         ],
                       ),
                       overflow: TextOverflow.visible,

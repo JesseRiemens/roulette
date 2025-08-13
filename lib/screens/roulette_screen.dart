@@ -43,9 +43,7 @@ class RouletteScreen extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: EditingWidget(
-          key: ValueKey(
-            rouletteItems,
-          ), // Ensures state is reset only when items change
+          key: ValueKey(rouletteItems),
           items: rouletteItems,
           onItemsChanged: (items) =>
               context.read<StorageCubit>().saveItems(items),
