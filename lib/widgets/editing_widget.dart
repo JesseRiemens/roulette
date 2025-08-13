@@ -106,79 +106,114 @@ class _EditingWidgetState extends State<EditingWidget> {
               ),
             ),
             const SizedBox(height: 10),
-            SizedBox(
-              height: (_items.length * 48.0).clamp(48.0, 300.0),
-              child: ReorderableListView(
-                shrinkWrap: true,
-                buildDefaultDragHandles: true,
-                onReorder: (int oldIndex, int newIndex) {
-                  setState(() {
-                    if (newIndex > oldIndex) newIndex--;
-                    final item = _items.removeAt(oldIndex);
-                    _items.insert(newIndex, item);
-                  });
-                  widget.onItemsChanged(List<String>.from(_items));
-                },
-                children: [
-                  for (int index = 0; index < _items.length; index++)
-                    Row(
-                      key: ValueKey('item_$index'),
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.remove_circle_outline_sharp),
-                          onPressed: () {
-                            setState(() {
-                              _items.removeAt(index);
-                            });
-                            widget.onItemsChanged(List<String>.from(_items));
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          tooltip: AppLocalizations.of(context)!.edit,
-                          onPressed: () {
-                            setState(() {
-                              _controller.text = _items[index];
-                              _items.removeAt(index);
-                            });
-                            widget.onItemsChanged(List<String>.from(_items));
-                          },
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: '${index + 1}: ',
-                                    style: unifiedTextStyle.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: _items[index],
-                                    style: unifiedTextStyle,
-                                  ),
-                                ],
-                              ),
-                              overflow: TextOverflow.visible,
-                              softWrap: true,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                ],
-              ),
-            ),
+            buildListView(context, unifiedTextStyle),
           ],
         ),
+      ),
+    );
+  }
+
+  SizedBox buildListView(BuildContext context, TextStyle unifiedTextStyle) {
+    return SizedBox(
+      height: (_items.length * 48.0).clamp(48.0, 300.0),
+      child: ReorderableListView(
+        buildDefaultDragHandles: false,
+        shrinkWrap: true,
+        onReorder: (int oldIndex, int newIndex) {
+          setState(() {
+            if (newIndex > oldIndex) newIndex--;
+            final item = _items.removeAt(oldIndex);
+            _items.insert(newIndex, item);
+          });
+          widget.onItemsChanged(List<String>.from(_items));
+        },
+        children: [
+          for (int index = 0; index < _items.length; index++)
+            Row(
+              key: ValueKey('item_$index'),
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ReorderableDragStartListener(
+                  index: index,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: Icon(
+                      Icons.drag_handle,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert, size: 20),
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit, size: 18),
+                          SizedBox(width: 8),
+                          Text('Edit'),
+                        ],
+                      ),
+                    ),
+                    const PopupMenuItem(
+                      value: 'remove',
+                      child: Row(
+                        children: [
+                          Icon(Icons.remove_circle_outline_sharp, size: 18),
+                          SizedBox(width: 8),
+                          Text('Remove'),
+                        ],
+                      ),
+                    ),
+                  ],
+                  onSelected: (value) {
+                    if (value == 'edit') {
+                      setState(() {
+                        _controller.text = _items[index];
+                        _items.removeAt(index);
+                      });
+                      widget.onItemsChanged(List<String>.from(_items));
+                    } else if (value == 'remove') {
+                      setState(() {
+                        _items.removeAt(index);
+                      });
+                      widget.onItemsChanged(List<String>.from(_items));
+                    }
+                  },
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4.0,
+                      vertical: 2.0,
+                    ),
+                    child: RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '${index + 1}: ',
+                            style: unifiedTextStyle.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                          TextSpan(
+                            text: _items[index],
+                            style: unifiedTextStyle,
+                          ),
+                        ],
+                      ),
+                      overflow: TextOverflow.visible,
+                      softWrap: true,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+        ],
       ),
     );
   }
