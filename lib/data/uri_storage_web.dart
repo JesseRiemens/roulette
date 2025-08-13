@@ -5,7 +5,7 @@ import 'package:webroulette/data/uri_storage.dart';
 class UriStorage implements UriStorageInterface {
   const UriStorage();
 
-  void _pushState(String path) => urlStrategy?.pushState('', '', path);
+  void _replaceState(String path) => urlStrategy?.replaceState('', '', path);
 
   @override
   Map<String, List<String>> get queryParameters => Uri.base.queryParametersAll;
@@ -15,10 +15,17 @@ class UriStorage implements UriStorageInterface {
 
   @override
   void storeQueryParameters(Map<String, List<String>> parameters) {
-    final uri = Uri.base.replace(queryParameters: parameters);
-    final newPath = uri.path + (uri.hasQuery ? '?${uri.query}' : '');
+    final segments = Uri.base.pathSegments;
+    final lastSegment = segments.isNotEmpty ? segments.last : '';
+    final uri = Uri(
+      path: lastSegment.isNotEmpty ? '/$lastSegment' : '/',
+      queryParameters: parameters.isNotEmpty ? parameters : null,
+    );
+    final lastSegmentWithQuery = uri.toString();
     // ignore: avoid_print
-    print('[UriStorage] Pushing new path: $newPath');
-    _pushState(newPath);
+    print(
+      '[UriStorage] pushing last segment with query: $lastSegmentWithQuery',
+    );
+    _replaceState(lastSegmentWithQuery);
   }
 }

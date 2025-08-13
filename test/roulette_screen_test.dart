@@ -20,7 +20,7 @@ void main() {
     (WidgetTester tester) async {
       await tester.pumpWidget(
         BlocProvider<StorageCubit>(
-          create: (_) => StorageCubit(['A', 'B']),
+          create: (_) => StorageCubit(),
           child: const MaterialApp(
             localizationsDelegates: [
               GlobalMaterialLocalizations.delegate,
@@ -33,6 +33,11 @@ void main() {
           ),
         ),
       );
+      // Set items after creation
+      (BlocProvider.of<StorageCubit>(
+        tester.element(find.byType(RouletteScreen)),
+      )..saveItems(['A', 'B']));
+      await tester.pump();
       expect(find.byType(EditingWidget), findsOneWidget);
       expect(find.byType(RouletteWidget), findsOneWidget);
     },
@@ -43,7 +48,7 @@ void main() {
     (WidgetTester tester) async {
       await tester.pumpWidget(
         BlocProvider<StorageCubit>(
-          create: (_) => StorageCubit(['A']),
+          create: (_) => StorageCubit(),
           child: const MaterialApp(
             localizationsDelegates: [
               GlobalMaterialLocalizations.delegate,
@@ -56,6 +61,10 @@ void main() {
           ),
         ),
       );
+      // Set items after creation
+      (BlocProvider.of<StorageCubit>(
+        tester.element(find.byType(RouletteScreen)),
+      )..saveItems(['A']));
       await tester.pumpAndSettle();
       expect(find.byType(EditingWidget), findsOneWidget);
       expect(find.byType(RouletteWidget), findsNothing);
