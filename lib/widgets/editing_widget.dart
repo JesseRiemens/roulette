@@ -87,9 +87,8 @@ class _EditingWidgetBody extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            SizedBox(
-              width: double.infinity,
-              height: 75,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: TextField(
                 decoration: InputDecoration(
                   hintStyle: unifiedTextStyle.copyWith(color: Colors.grey),
@@ -196,9 +195,13 @@ class _EditingWidgetBody extends StatelessWidget {
                             horizontal: 40,
                             vertical: 80,
                           ),
-                          content: SizedBox(
-                            width: 400,
-                            height: 120,
+                          content: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minWidth: 200,
+                              maxWidth: MediaQuery.of(context).size.width * 0.9,
+                              minHeight: 48,
+                              maxHeight: 200,
+                            ),
                             child: TextField(
                               controller: controller,
                               autofocus: true,
