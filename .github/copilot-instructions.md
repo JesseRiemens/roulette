@@ -22,12 +22,12 @@ flutter pub get
 
 # NEVER CANCEL: Build for web release - takes 3-5 minutes
 # Set timeout to 10+ minutes
-# May fail due to network restrictions downloading Flutter Web SDK
+# Requires network access to download Flutter Web SDK
 flutter build web --release --base-href /roulette/
 
-# NEVER CANCEL: Build for web debug (faster, no network dependencies) - takes 2-3 minutes
+# NEVER CANCEL: Build for web debug (faster) - takes 2-3 minutes
 # Set timeout to 8+ minutes
-# Recommended approach if network access is limited  
+# Also requires network access for Flutter Web SDK download
 flutter build web --debug
 
 # NEVER CANCEL: Run tests - takes 1-2 minutes
@@ -36,7 +36,7 @@ flutter build web --debug
 flutter test
 
 # Run analysis (linting) - takes 10-30 seconds
-# Currently shows errors due to dependency resolution, but still useful for checking syntax
+# Clean output with no issues when dependencies are properly resolved
 flutter analyze --no-fatal-infos
 
 # Clean build artifacts when needed
@@ -50,6 +50,7 @@ flutter pub get
 
 # Run in debug mode on web - takes 30-60 seconds to start
 # Set timeout to 3+ minutes
+# Note: Runs on http://localhost:8080 with auto-generated auth code
 flutter run -d web-server --web-port 8080
 
 # Or run in Chrome
@@ -57,7 +58,9 @@ flutter run -d chrome
 ```
 
 ### Development Server
-- Local development server runs on `http://localhost:8080` by default
+- Local development server runs on `http://localhost:8080` when using `--web-port 8080`
+- Without specifying port, Flutter assigns a random port
+- Server includes auto-generated authentication for security
 - Hot reload is supported during development
 - Application loads instantly once server is running
 
@@ -95,17 +98,17 @@ Always test these scenarios after making changes:
    - Check that Dutch localization exists (though may have untranslated messages)
 
 ### Required Pre-commit Validation
-- **Recommended**: Run `flutter analyze --no-fatal-infos` (warnings are acceptable)
+- **Recommended**: Run `flutter analyze --no-fatal-infos` (should show no issues)
 - **Critical**: Verify the application builds successfully with either:
-  - `flutter build web --debug` (preferred if network limited)
-  - `flutter build web --release` (requires network access)
+  - `flutter build web --debug` (faster build)
+  - `flutter build web --release` (production build)
 - **Recommended**: Run `flutter test` if in a standard Flutter environment
 - **Manual**: Always test the application functionality using the validation scenarios above
 
 ## Common Tasks
 
-### Code Generation (Files Already Generated)
-The project uses freezed and json_serializable for code generation. **The generated files are already committed to the repository and should not need regeneration** unless you modify files with @freezed or @JsonSerializable annotations:
+### Code Generation (Files Currently Committed)
+The project uses freezed and json_serializable for code generation. **The generated files are currently committed to the repository but there are plans to remove them and generate on-the-fly during builds** unless you modify files with @freezed or @JsonSerializable annotations:
 
 ```bash
 # Only run if you modify storage_bloc.dart or other annotated files
@@ -117,10 +120,12 @@ dart run build_runner clean
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-**Generated files (do not edit manually):**
+**Generated files (currently committed, but planned for removal):**
 - `lib/bloc/storage_bloc.freezed.dart`
 - `lib/bloc/storage_bloc.g.dart`
 - `lib/l10n/app_localizations.dart`
+- `lib/l10n/app_localizations_en.dart`
+- `lib/l10n/app_localizations_nl.dart`
 
 ### Adding New Features
 - State management uses BLoC pattern with `StorageCubit` in `lib/bloc/storage_bloc.dart`
@@ -157,6 +162,8 @@ lib/
 │   └── uri_storage_web.dart       # Web-specific implementation
 ├── l10n/                 # Internationalization
 │   ├── app_localizations.dart     # Generated - DO NOT EDIT
+│   ├── app_localizations_en.dart  # Generated - DO NOT EDIT
+│   ├── app_localizations_nl.dart  # Generated - DO NOT EDIT
 │   ├── intl_en.arb
 │   └── int_nl.arb
 ├── screens/
@@ -204,16 +211,16 @@ GitHub Actions workflow (`.github/workflows/flutter.yml`):
   - Generated files are already committed, so regeneration is typically not needed
   - Only regenerate if you modify @freezed or @JsonSerializable annotated files
   
-- **Web Builds**: May fail due to network restrictions downloading Flutter Web SDK
-  - Use `flutter build web --debug` as an alternative that requires fewer downloads
+- **Web Builds**: Both debug and release builds require network access to download Flutter Web SDK
+  - May fail in environments with restricted network access
+  - No offline alternative available for web builds
   
 - **Testing**: Tests may fail in containerized environments due to dependency resolution
   - Tests work in standard Flutter development environments
   - CI has tests commented out due to these dependency issues
 
 ### Network Dependencies
-- Web builds require network access to download Flutter Web SDK
-- Use debug builds (`flutter build web --debug`) if network is restricted
+- All web builds (debug and release) require network access to download Flutter Web SDK
 - Docker container `ghcr.io/cirruslabs/flutter:stable` can be used for builds
 
 ### Dependency Constraints
