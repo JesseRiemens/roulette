@@ -11,11 +11,8 @@ class StorageCubit extends HydratedCubit<StoredItems> {
   StorageCubit() : super(StoredItems.initial);
 
   StorageCubit.web() : super(StoredItems.initial) {
-    if (uriStorage.queryParameters['items'] != null &&
-        uriStorage.queryParameters['items']!.isNotEmpty) {
-      final items = uriStorage.queryParameters['items']!
-          .map((item) => utf8.decode(base64Url.decode(item)))
-          .toList();
+    if (uriStorage.queryParameters['items'] != null && uriStorage.queryParameters['items']!.isNotEmpty) {
+      final items = uriStorage.queryParameters['items']!.map((item) => utf8.decode(base64Url.decode(item))).toList();
       emit(state.copyWith(items: items));
     }
   }
@@ -30,8 +27,7 @@ class StorageCubit extends HydratedCubit<StoredItems> {
   Uri get uriWithData => uriStorage.uri;
 
   @override
-  StoredItems? fromJson(Map<String, dynamic> json) =>
-      StoredItems.fromJson(json);
+  StoredItems? fromJson(Map<String, dynamic> json) => StoredItems.fromJson(json);
 
   @override
   Map<String, dynamic>? toJson(StoredItems state) => state.toJson();
@@ -44,8 +40,7 @@ abstract class StoredItems with _$StoredItems {
 
   static const initial = StoredItems(items: []);
 
-  factory StoredItems.fromJson(Map<String, dynamic> json) =>
-      _$StoredItemsFromJson(json);
+  factory StoredItems.fromJson(Map<String, dynamic> json) => _$StoredItemsFromJson(json);
 
   Map<String, List<String>> get toUriQueryParameters => {
     'items': items.map((item) => base64Url.encode(utf8.encode(item))).toList(),

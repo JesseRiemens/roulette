@@ -15,59 +15,49 @@ void main() {
     await initHydratedStorage();
   });
 
-  testWidgets(
-    'RouletteScreen shows both widgets when there are multiple items',
-    (WidgetTester tester) async {
-      await tester.pumpWidget(
-        BlocProvider<StorageCubit>(
-          create: (_) => StorageCubit(),
-          child: const MaterialApp(
-            localizationsDelegates: [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              AppLocalizations.delegate,
-            ],
-            supportedLocales: [Locale('en')],
-            locale: Locale('en'),
-            home: RouletteScreen(),
-          ),
+  testWidgets('RouletteScreen shows both widgets when there are multiple items', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      BlocProvider<StorageCubit>(
+        create: (_) => StorageCubit(),
+        child: const MaterialApp(
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            AppLocalizations.delegate,
+          ],
+          supportedLocales: [Locale('en')],
+          locale: Locale('en'),
+          home: RouletteScreen(),
         ),
-      );
-      // Set items after creation
-      (BlocProvider.of<StorageCubit>(
-        tester.element(find.byType(RouletteScreen)),
-      )..saveItems(['A', 'B']));
-      await tester.pump();
-      expect(find.byType(EditingWidget), findsOneWidget);
-      expect(find.byType(RouletteWidget), findsOneWidget);
-    },
-  );
+      ),
+    );
+    // Set items after creation
+    (BlocProvider.of<StorageCubit>(tester.element(find.byType(RouletteScreen)))..saveItems(['A', 'B']));
+    await tester.pump();
+    expect(find.byType(EditingWidget), findsOneWidget);
+    expect(find.byType(RouletteWidget), findsOneWidget);
+  });
 
-  testWidgets(
-    'RouletteScreen hides RouletteWidget when there is only one item',
-    (WidgetTester tester) async {
-      await tester.pumpWidget(
-        BlocProvider<StorageCubit>(
-          create: (_) => StorageCubit(),
-          child: const MaterialApp(
-            localizationsDelegates: [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              AppLocalizations.delegate,
-            ],
-            supportedLocales: [Locale('en')],
-            locale: Locale('en'),
-            home: RouletteScreen(),
-          ),
+  testWidgets('RouletteScreen hides RouletteWidget when there is only one item', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      BlocProvider<StorageCubit>(
+        create: (_) => StorageCubit(),
+        child: const MaterialApp(
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            AppLocalizations.delegate,
+          ],
+          supportedLocales: [Locale('en')],
+          locale: Locale('en'),
+          home: RouletteScreen(),
         ),
-      );
-      // Set items after creation
-      (BlocProvider.of<StorageCubit>(
-        tester.element(find.byType(RouletteScreen)),
-      )..saveItems(['A']));
-      await tester.pumpAndSettle();
-      expect(find.byType(EditingWidget), findsOneWidget);
-      expect(find.byType(RouletteWidget), findsNothing);
-    },
-  );
+      ),
+    );
+    // Set items after creation
+    (BlocProvider.of<StorageCubit>(tester.element(find.byType(RouletteScreen)))..saveItems(['A']));
+    await tester.pumpAndSettle();
+    expect(find.byType(EditingWidget), findsOneWidget);
+    expect(find.byType(RouletteWidget), findsNothing);
+  });
 }

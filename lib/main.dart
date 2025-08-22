@@ -20,12 +20,7 @@ void main() async {
   );
   usePathUrlStrategy();
 
-  runApp(
-    BlocProvider(
-      create: (_) => kIsWeb ? StorageCubit.web() : StorageCubit(),
-      child: const MainApp(),
-    ),
-  );
+  runApp(BlocProvider(create: (_) => kIsWeb ? StorageCubit.web() : StorageCubit(), child: const MainApp()));
 }
 
 class MainApp extends StatelessWidget {
@@ -35,16 +30,10 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.from(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.dark,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark),
       ),
       title: 'Roulette',
-      onGenerateRoute: (settings) => CustomPageRoute(
-        builder: (context) => const RouletteScreen(),
-        settings: settings,
-      ),
+      onGenerateRoute: (settings) => CustomPageRoute(builder: (context) => const RouletteScreen(), settings: settings),
       initialRoute: '',
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
         GlobalMaterialLocalizations.delegate,
@@ -66,8 +55,7 @@ class MainApp extends StatelessWidget {
 }
 
 class CustomPageRoute extends MaterialPageRoute {
-  CustomPageRoute({builder, settings})
-    : super(builder: builder, settings: settings);
+  CustomPageRoute({builder, settings}) : super(builder: builder, settings: settings);
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 0);

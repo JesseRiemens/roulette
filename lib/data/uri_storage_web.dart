@@ -23,9 +23,7 @@ class UriStorage implements UriStorageInterface {
     );
     final lastSegmentWithQuery = uri.toString();
     // ignore: avoid_print
-    print(
-      '[UriStorage] pushing last segment with query: $lastSegmentWithQuery',
-    );
+    print('[UriStorage] pushing last segment with query: $lastSegmentWithQuery');
     _replaceState(lastSegmentWithQuery);
   }
 }
