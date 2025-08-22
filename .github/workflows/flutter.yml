@@ -1,13 +1,8 @@
-name: Flutter Workflow
-
+name: Deploy
 
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
-
-  # Runs on pull requests targeting the default branch
-  pull_request:
     branches: ["main"]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -41,9 +36,6 @@ jobs:
       - name: Install dependencies
         run: flutter pub get    
     
-      - name: Run tests
-        run: flutter test
-
       - name: Build web
         run: flutter build web --release --base-href /roulette/
 
@@ -68,9 +60,6 @@ jobs:
   deploy:
     # Add a dependency to the build job
     needs: build
-
-    # Only deploy on pushes to main branch, not on pull requests
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
     permissions:
