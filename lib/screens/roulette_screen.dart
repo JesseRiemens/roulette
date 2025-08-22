@@ -60,15 +60,63 @@ class RouletteScreen extends StatelessWidget {
   Padding _buildCopyButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
-      child: ElevatedButton.icon(
-        icon: const Icon(Icons.copy),
-        label: const Text('Copy URL'),
-        onPressed: () {
-          final uri = context.read<StorageCubit>().uriWithData;
-          Clipboard.setData(ClipboardData(text: uri.toString())).then(
-            (_) => context.mounted
-                ? ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('URL copied to clipboard!')))
-                : null,
+      child: BlocBuilder<StorageCubit, StoredItems>(
+        builder: (context, state) {
+          return Column(
+            children: [
+              ElevatedButton.icon(
+                icon: state.isUploading 
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.share),
+                label: Text(state.isUploading ? 'Sharing...' : 'Share Items'),
+                onPressed: state.isUploading || state.items.isEmpty 
+                    ? null 
+                    : () async {
+                        try {
+                          final url = await context.read<StorageCubit>().shareItems();
+                          if (context.mounted) {
+                            await Clipboard.setData(ClipboardData(text: url));
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Shareable URL copied to clipboard!')),
+                              );
+                            }
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Failed to share items: ${e.toString()}')),
+                            );
+                          }
+                        }
+                      },
+              ),
+              if (state.error != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    state.error!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              if (state.isLoading)
+                const Padding(
+                  padding: EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    'Loading shared items...',
+                    style: TextStyle(fontSize: 12),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+            ],
           );
         },
       ),
