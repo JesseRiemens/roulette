@@ -100,7 +100,7 @@ Always test these scenarios after making changes:
   - `flutter build web --debug` (preferred if network limited)
   - `flutter build web --release` (requires network access)
 - **Recommended**: Run `flutter test` if in a standard Flutter environment
-- **Manual**: Always test the application functionality using the validation scenarios below
+- **Manual**: Always test the application functionality using the validation scenarios above
 
 ## Common Tasks
 
