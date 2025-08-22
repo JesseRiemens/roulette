@@ -10,47 +10,43 @@ void main() {
       repository = const impl.HastebinRepository();
     });
 
+    tearDown(() async {
+      // Wait 1 second between tests to respect API rate limit (100 requests/minute)
+      await Future.delayed(const Duration(seconds: 1));
+    });
+
     group('API Authentication and Connectivity', () {
-      test('verify API authentication works', () async {
+      test('API authentication should work correctly', () async {
         const testContent = 'Integration test - API auth verification';
         
         final result = await repository.createDocument(testContent);
         
         result.when(
           success: (key) {
-            expect(key, isNotEmpty);
-            expect(key.length, greaterThan(3));
-            print('✅ API authentication successful - Created document with key: $key');
+            expect(key, isNotEmpty, reason: 'Document key should not be empty when authentication succeeds');
+            expect(key.length, greaterThan(3), reason: 'Document key should be at least 4 characters long');
           },
-          failure: (error) {
-            print('❌ API authentication failed: $error');
-            // The test still passes to show what error we get
-            expect(error, isNotEmpty);
-          },
+          failure: (error) => fail('API authentication should work with provided API key: $error'),
         );
       });
     });
 
     group('createDocument', () {
-      test('creates document successfully with real API', () async {
+      test('should create document successfully with real API', () async {
         const testContent = 'Integration test content for create operation';
         
         final result = await repository.createDocument(testContent);
         
         result.when(
           success: (key) {
-            expect(key, isNotEmpty);
-            expect(key.length, greaterThan(3));
-            print('✅ Created document with key: $key');
+            expect(key, isNotEmpty, reason: 'Created document should have non-empty key');
+            expect(key.length, greaterThan(3), reason: 'Document key should be at least 4 characters long');
           },
-          failure: (error) {
-            print('ℹ️ Create document failed (expected if auth issues): $error');
-            expect(error, isNotEmpty);
-          },
+          failure: (error) => fail('Document creation should succeed with valid API key: $error'),
         );
       });
 
-      test('handles different content types', () async {
+      test('should handle different content types correctly', () async {
         final testCases = [
           'Simple text content',
           'Content with\nnewlines\nand\ntabs\t\there',
@@ -64,174 +60,153 @@ void main() {
           final result = await repository.createDocument(content);
           
           result.when(
-            success: (key) {
-              expect(key, isNotEmpty);
-              print('✅ Content type ${i + 1} created with key: $key');
-            },
-            failure: (error) {
-              print('ℹ️ Content type ${i + 1} failed: $error');
-              expect(error, isNotEmpty);
-            },
+            success: (key) => expect(key, isNotEmpty, reason: 'Content type ${i + 1} should create valid document'),
+            failure: (error) => fail('Content type ${i + 1} creation should succeed: $error'),
           );
         }
       });
     });
 
     group('getDocument', () {
-      test('attempts to retrieve document (with fallback for known key)', () async {
-        // Try with a potentially valid key format
-        const testKey = 'test123';
+      test('should retrieve existing document content', () async {
+        // First create a document to retrieve
+        const testContent = 'Test content for retrieval verification';
         
+        final createResult = await repository.createDocument(testContent);
+        late String testKey;
+        
+        createResult.when(
+          success: (key) => testKey = key,
+          failure: (error) => fail('Failed to create document for retrieval test: $error'),
+        );
+        
+        // Now retrieve it
         final result = await repository.getDocument(testKey);
         
         result.when(
-          success: (content) {
-            expect(content, isNotEmpty);
-            print('✅ Successfully retrieved content for key: $testKey');
-            print('Content preview: ${content.substring(0, content.length.clamp(0, 100))}');
-          },
-          failure: (error) {
-            print('ℹ️ Document retrieval failed (expected): $error');
-            expect(error, isNotEmpty);
-          },
+          success: (content) => expect(content, equals(testContent), reason: 'Retrieved content should match original'),
+          failure: (error) => fail('Document retrieval should succeed for existing document: $error'),
         );
       });
 
-      test('handles various key formats', () async {
-        final testKeys = [
-          'abc123',
-          'shortkey',
-          'verylongkeywithalotofcharacters',
-          'key-with-dashes',
-          'key_with_underscores',
+      test('should handle various key formats when they exist', () async {
+        // Create documents with different content to get various key formats
+        final testContents = [
+          'Content for key format test 1',
+          'Content for key format test 2',
+          'Content for key format test 3',
         ];
 
-        for (final key in testKeys) {
+        final createdKeys = <String>[];
+        
+        // Create the documents first
+        for (int i = 0; i < testContents.length; i++) {
+          final result = await repository.createDocument(testContents[i]);
+          result.when(
+            success: (key) => createdKeys.add(key),
+            failure: (error) => fail('Failed to create test document $i: $error'),
+          );
+        }
+
+        // Now test retrieval
+        for (int i = 0; i < createdKeys.length; i++) {
+          final key = createdKeys[i];
+          final expectedContent = testContents[i];
+          
           final result = await repository.getDocument(key);
           
           result.when(
-            success: (content) {
-              expect(content, isNotEmpty);
-              print('✅ Retrieved content for key: $key');
-            },
-            failure: (error) {
-              print('ℹ️ Key $key failed: $error');
-              expect(error, isNotEmpty);
-            },
+            success: (content) => expect(content, equals(expectedContent), reason: 'Content should match for key $key'),
+            failure: (error) => fail('Retrieval should succeed for created key $key: $error'),
           );
         }
       });
     });
 
     group('getDocumentWithMetadata', () {
-      test('attempts to retrieve document with metadata', () async {
-        const testKey = 'test123';
+      test('should retrieve document with metadata for existing documents', () async {
+        const testContent = 'Test content for metadata retrieval';
         
+        // First create a document
+        final createResult = await repository.createDocument(testContent);
+        late String testKey;
+        
+        createResult.when(
+          success: (key) => testKey = key,
+          failure: (error) => fail('Failed to create document for metadata test: $error'),
+        );
+        
+        // Now retrieve with metadata
         final result = await repository.getDocumentWithMetadata(testKey);
         
         result.when(
           success: (document) {
-            expect(document.key, equals(testKey));
-            expect(document.content, isNotEmpty);
-            print('✅ Retrieved document with metadata for key: $testKey');
-            print('Content preview: ${document.content.substring(0, document.content.length.clamp(0, 100))}');
+            expect(document.key, equals(testKey), reason: 'Document key should match requested key');
+            expect(document.content, equals(testContent), reason: 'Document content should match original');
           },
-          failure: (error) {
-            print('ℹ️ Document metadata retrieval failed (expected): $error');
-            expect(error, isNotEmpty);
-          },
+          failure: (error) => fail('Metadata retrieval should succeed for existing document: $error'),
         );
       });
     });
 
     group('Complete workflow test', () {
-      test('full create-retrieve-metadata workflow', () async {
+      test('full create-retrieve-metadata workflow should work end-to-end', () async {
         const testContent = 'Complete workflow test - create, retrieve, metadata';
-        
-        print('🚀 Starting complete workflow test...');
         
         // Step 1: Create document
         final createResult = await repository.createDocument(testContent);
+        late String documentKey;
         
-        await createResult.when(
-          success: (key) async {
-            print('📝 Created document: $key');
-            
-            // Step 2: Retrieve raw content
-            final getRawResult = await repository.getDocument(key);
-            
-            await getRawResult.when(
-              success: (rawContent) async {
-                expect(rawContent, equals(testContent));
-                print('📄 Retrieved raw content successfully');
-                
-                // Step 3: Retrieve with metadata
-                final getMetadataResult = await repository.getDocumentWithMetadata(key);
-                
-                getMetadataResult.when(
-                  success: (document) {
-                    expect(document.key, equals(key));
-                    expect(document.content, equals(testContent));
-                    print('📊 Retrieved metadata successfully');
-                    print('✅ Complete workflow successful for key: $key');
-                  },
-                  failure: (error) {
-                    print('❌ Metadata retrieval failed: $error');
-                    fail('Metadata retrieval failed: $error');
-                  },
-                );
-              },
-              failure: (error) {
-                print('❌ Raw content retrieval failed: $error');
-                fail('Raw content retrieval failed: $error');
-              },
-            );
+        createResult.when(
+          success: (key) => documentKey = key,
+          failure: (error) => fail('Document creation failed in workflow: $error'),
+        );
+
+        // Step 2: Retrieve raw content
+        final getRawResult = await repository.getDocument(documentKey);
+        
+        getRawResult.when(
+          success: (rawContent) => expect(rawContent, equals(testContent), reason: 'Raw content should match original in workflow'),
+          failure: (error) => fail('Raw content retrieval failed in workflow: $error'),
+        );
+
+        // Step 3: Retrieve with metadata
+        final getMetadataResult = await repository.getDocumentWithMetadata(documentKey);
+        
+        getMetadataResult.when(
+          success: (document) {
+            expect(document.key, equals(documentKey), reason: 'Metadata document key should match in workflow');
+            expect(document.content, equals(testContent), reason: 'Metadata document content should match original in workflow');
           },
-          failure: (error) {
-            print('❌ Document creation failed: $error');
-            print('ℹ️ This is expected if API authentication is not working');
-            expect(error, isNotEmpty);
-          },
+          failure: (error) => fail('Metadata retrieval failed in workflow: $error'),
         );
       });
     });
 
     group('Error handling tests', () {
-      test('handles network timeouts gracefully', () async {
-        // This test helps us understand network behavior
-        const testContent = 'Timeout test content';
+      test('should handle non-existent documents correctly', () async {
+        // Test various edge cases
+        const nonExistentKey = 'definitely_does_not_exist_12345';
         
-        final result = await repository.createDocument(testContent);
+        final result = await repository.getDocument(nonExistentKey);
         
         result.when(
-          success: (key) {
-            print('✅ No timeout - created with key: $key');
-            expect(key, isNotEmpty);
-          },
-          failure: (error) {
-            print('ℹ️ Request failed (may be timeout or auth): $error');
-            expect(error, isNotEmpty);
-          },
+          success: (content) => fail('Non-existent document should not return content: $content'),
+          failure: (error) => expect(error, isNotEmpty, reason: 'Non-existent document should return proper error message'),
         );
       });
 
-      test('handles malformed responses', () async {
-        // Test various edge cases
-        const testContent = 'Edge case test content';
+      test('should handle network conditions gracefully', () async {
+        const testContent = 'Network resilience test content';
         
         final result = await repository.createDocument(testContent);
         
         result.when(
           success: (key) {
-            expect(key, isA<String>());
-            expect(key, isNotEmpty);
-            print('✅ Edge case handled correctly with key: $key');
+            expect(key, isA<String>(), reason: 'Result should be a string when successful');
+            expect(key, isNotEmpty, reason: 'Document key should not be empty when successful');
           },
-          failure: (error) {
-            expect(error, isA<String>());
-            expect(error, isNotEmpty);
-            print('ℹ️ Edge case failed as expected: $error');
-          },
+          failure: (error) => fail('Network operations should succeed with valid credentials: $error'),
         );
       });
     });
