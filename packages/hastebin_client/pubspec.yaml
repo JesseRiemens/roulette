@@ -1,0 +1,19 @@
+name: hastebin_client
+description: A Dart package for interacting with the Hastebin API, providing text sharing capabilities.
+version: 1.0.0
+repository: https://github.com/JesseRiemens/roulette
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+
+dependencies:
+  http: ^1.1.0
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.9.0
+
+dev_dependencies:
+  test: ^1.21.0
+  build_runner: ^2.4.14
+  freezed: ^3.2.0
+  json_serializable: ^6.10.0
+  lints: ^3.0.0

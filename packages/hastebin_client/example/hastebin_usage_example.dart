@@ -1,4 +1,4 @@
-import 'package:webroulette/data/hastebin_repository.dart';
+import 'package:hastebin_client/hastebin_client.dart';
 
 /// Example usage of the hastebin repository
 class HastebinUsageExample {

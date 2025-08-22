@@ -1,8 +1,7 @@
+import 'hastebin_models.dart';
 // Conditional import for HastebinRepository
 import 'hastebin_repository_stub.dart'
     if (dart.library.html) 'hastebin_repository_impl.dart';
-
-import 'hastebin_models.dart';
 
 /// Interface for hastebin operations following the existing data layer pattern
 abstract interface class HastebinRepositoryInterface {

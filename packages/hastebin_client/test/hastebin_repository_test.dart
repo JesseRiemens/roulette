@@ -1,7 +1,7 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:webroulette/data/hastebin_models.dart';
-import 'package:webroulette/data/hastebin_repository_impl.dart' as impl;
-import 'package:webroulette/data/hastebin_repository_stub.dart' as stub;
+import 'package:test/test.dart';
+import 'package:hastebin_client/src/hastebin_models.dart';
+import 'package:hastebin_client/src/hastebin_repository_impl.dart' as impl;
+import 'package:hastebin_client/src/hastebin_repository_stub.dart' as stub;
 
 void main() {
   group('HastebinRepository', () {
