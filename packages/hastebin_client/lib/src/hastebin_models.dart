@@ -44,61 +44,30 @@ class HastebinCreateResponse {
   }
 }
 
-/// Result wrapper for hastebin operations
-abstract class HastebinResult<T> {
-  const HastebinResult();
+/// Exception thrown when hastebin operations fail
+class HastebinException implements Exception {
+  final String message;
+  final int? statusCode;
 
-  factory HastebinResult.success(T data) = HastebinSuccess<T>;
-  factory HastebinResult.failure(String error) = HastebinFailure<T>;
+  const HastebinException(this.message, [this.statusCode]);
 
-  /// Pattern matching method for handling results
-  R when<R>({
-    required R Function(T data) success,
-    required R Function(String error) failure,
-  }) {
-    if (this is HastebinSuccess<T>) {
-      return success((this as HastebinSuccess<T>).data);
-    } else if (this is HastebinFailure<T>) {
-      return failure((this as HastebinFailure<T>).error);
+  @override
+  String toString() {
+    if (statusCode != null) {
+      return 'HastebinException: $message (HTTP $statusCode)';
     }
-    throw StateError('Invalid HastebinResult state');
+    return 'HastebinException: $message';
   }
 }
 
-class HastebinSuccess<T> extends HastebinResult<T> {
-  final T data;
-
-  const HastebinSuccess(this.data);
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is HastebinSuccess &&
-          runtimeType == other.runtimeType &&
-          data == other.data;
-
-  @override
-  int get hashCode => data.hashCode;
-
-  @override
-  String toString() => 'HastebinSuccess(data: $data)';
+/// Exception thrown when a document is not found
+class HastebinDocumentNotFoundException extends HastebinException {
+  const HastebinDocumentNotFoundException(String key) 
+      : super('Document not found: $key', 404);
 }
 
-class HastebinFailure<T> extends HastebinResult<T> {
-  final String error;
-
-  const HastebinFailure(this.error);
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is HastebinFailure &&
-          runtimeType == other.runtimeType &&
-          error == other.error;
-
-  @override
-  int get hashCode => error.hashCode;
-
-  @override
-  String toString() => 'HastebinFailure(error: $error)';
+/// Exception thrown when authentication fails
+class HastebinAuthenticationException extends HastebinException {
+  const HastebinAuthenticationException() 
+      : super('Authentication failed - invalid or missing API key', 401);
 }

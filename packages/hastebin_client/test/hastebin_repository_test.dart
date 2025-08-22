@@ -13,40 +13,83 @@ void main() {
       });
 
       group('createDocument', () {
-        test('returns success with mock key', () async {
+        test('returns key for valid content', () async {
           const testContent = 'Test content';
 
-          final result = await repository.createDocument(testContent);
+          final key = await repository.createDocument(testContent);
 
-          expect(result, isA<HastebinSuccess<String>>());
-          result.when(
-            success: (key) => expect(key, isNotEmpty),
-            failure: (error) =>
-                fail('Expected success but got failure: $error'),
+          expect(key, isNotEmpty);
+          expect(key, isA<String>());
+        });
+      });
+
+      group('getDocument', () {
+        test('returns content for valid key', () async {
+          const testKey = 'abc123';
+
+          final content = await repository.getDocument(testKey);
+
+          expect(content, isNotEmpty);
+          expect(content, contains(testKey));
+        });
+      });
+
+      group('getDocumentWithMetadata', () {
+        test('returns document for valid key', () async {
+          const testKey = 'abc123';
+
+          final document = await repository.getDocumentWithMetadata(testKey);
+
+          expect(document, isA<HastebinDocument>());
+          expect(document.key, equals(testKey));
+          expect(document.content, contains(testKey));
+        });
+      });
+    });
+
+    group('Real Implementation Tests', () {
+      late impl.HastebinRepository repository;
+
+      setUp(() {
+        repository = const impl.HastebinRepository();
+      });
+
+      group('createDocument', () {
+        test('throws HastebinAuthenticationException when API key is missing', () async {
+          const testContent = 'Test content';
+
+          // Since HASTEBIN_API_KEY is not set in test environment, this should throw
+          expect(
+            () => repository.createDocument(testContent),
+            throwsA(isA<HastebinAuthenticationException>()),
           );
         });
       });
 
       group('getDocument', () {
-        test('returns success with mock content', () async {
+        test('throws HastebinAuthenticationException when API key is missing', () async {
           const testKey = 'abc123';
 
-          final result = await repository.getDocument(testKey);
-
-          expect(result, isA<HastebinSuccess<String>>());
-          result.when(
-            success: (content) => expect(content, contains(testKey)),
-            failure: (error) =>
-                fail('Expected success but got failure: $error'),
+          expect(
+            () => repository.getDocument(testKey),
+            throwsA(isA<HastebinAuthenticationException>()),
           );
         });
       });
 
       group('getDocumentWithMetadata', () {
-        test('returns success with mock document', () async {
+        test('throws HastebinAuthenticationException when API key is missing', () async {
           const testKey = 'abc123';
 
-          final result = await repository.getDocumentWithMetadata(testKey);
+          expect(
+            () => repository.getDocumentWithMetadata(testKey),
+            throwsA(isA<HastebinAuthenticationException>()),
+          );
+        });
+      });
+    });
+  });
+}
 
           expect(result, isA<HastebinSuccess<HastebinDocument>>());
           result.when(
