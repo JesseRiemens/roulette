@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webroulette/data/hastebin_models.dart';
-import 'package:webroulette/data/hastebin_repository_stub.dart' as stub;
 import 'package:webroulette/data/hastebin_repository_impl.dart' as impl;
+import 'package:webroulette/data/hastebin_repository_stub.dart' as stub;
 
 void main() {
   group('HastebinRepository', () {
@@ -15,13 +15,14 @@ void main() {
       group('createDocument', () {
         test('returns success with mock key', () async {
           const testContent = 'Test content';
-          
+
           final result = await repository.createDocument(testContent);
-          
+
           expect(result, isA<HastebinSuccess<String>>());
           result.when(
             success: (key) => expect(key, isNotEmpty),
-            failure: (error) => fail('Expected success but got failure: $error'),
+            failure: (error) =>
+                fail('Expected success but got failure: $error'),
           );
         });
       });
@@ -29,13 +30,14 @@ void main() {
       group('getDocument', () {
         test('returns success with mock content', () async {
           const testKey = 'abc123';
-          
+
           final result = await repository.getDocument(testKey);
-          
+
           expect(result, isA<HastebinSuccess<String>>());
           result.when(
             success: (content) => expect(content, contains(testKey)),
-            failure: (error) => fail('Expected success but got failure: $error'),
+            failure: (error) =>
+                fail('Expected success but got failure: $error'),
           );
         });
       });
@@ -43,16 +45,17 @@ void main() {
       group('getDocumentWithMetadata', () {
         test('returns success with mock document', () async {
           const testKey = 'abc123';
-          
+
           final result = await repository.getDocumentWithMetadata(testKey);
-          
+
           expect(result, isA<HastebinSuccess<HastebinDocument>>());
           result.when(
             success: (document) {
               expect(document.key, testKey);
               expect(document.content, contains(testKey));
             },
-            failure: (error) => fail('Expected success but got failure: $error'),
+            failure: (error) =>
+                fail('Expected success but got failure: $error'),
           );
         });
       });
@@ -68,54 +71,48 @@ void main() {
       group('API call structure validation', () {
         test('create document with proper authentication', () async {
           const testContent = 'Test content for real API';
-          
+
           final result = await repository.createDocument(testContent);
-          
+
           // This test validates that our implementation makes the call correctly
           // regardless of whether the API key is valid
           result.when(
             success: (key) {
               expect(key, isNotEmpty);
-              print('✅ Real API create successful: $key');
             },
             failure: (error) {
               expect(error, isNotEmpty);
-              print('ℹ️ Real API create failed (may be auth): $error');
             },
           );
         });
 
         test('get document with proper authentication', () async {
           const testKey = 'test123';
-          
+
           final result = await repository.getDocument(testKey);
-          
+
           result.when(
             success: (content) {
               expect(content, isNotEmpty);
-              print('✅ Real API get successful');
             },
             failure: (error) {
               expect(error, isNotEmpty);
-              print('ℹ️ Real API get failed (expected): $error');
             },
           );
         });
 
         test('get document with metadata and proper authentication', () async {
           const testKey = 'test123';
-          
+
           final result = await repository.getDocumentWithMetadata(testKey);
-          
+
           result.when(
             success: (document) {
               expect(document.key, equals(testKey));
               expect(document.content, isNotEmpty);
-              print('✅ Real API metadata successful');
             },
             failure: (error) {
               expect(error, isNotEmpty);
-              print('ℹ️ Real API metadata failed (expected): $error');
             },
           );
         });

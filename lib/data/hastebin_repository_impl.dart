@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
+
 import 'hastebin_models.dart';
 import 'hastebin_repository.dart';
 
@@ -7,8 +9,9 @@ import 'hastebin_repository.dart';
 class HastebinRepository implements HastebinRepositoryInterface {
   const HastebinRepository();
 
-  static const String _apiKey = '9df800211d9ea3d8648c06becb87676a9f31653305e30c5efd9da87a2e3574ca9a39e3f0d9514195ac68edb1b4b47123838e365e01152b5b9c4bbdc0';
-  
+  static const String _apiKey =
+      '9df800211d9ea3d8648c06becb87676a9f31653305e30c5efd9da87a2e3574ca9a39e3f0d9514195ac68edb1b4b47123838e365e01152b5b9e80146bfafa61d2';
+
   Map<String, String> get _authHeaders => {
     'Authorization': 'Bearer $_apiKey',
     'Content-Type': 'application/json',
