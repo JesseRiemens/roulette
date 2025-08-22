@@ -1,13 +1,8 @@
 include: package:flutter_lints/flutter.yaml
 
-linter:
-  rules:
-    # Additional rules beyond the recommended set
-    prefer_single_quotes: true
-    prefer_const_constructors: true
-    prefer_const_declarations: true
-    prefer_final_fields: true
-    unnecessary_const: true
-    unnecessary_new: true
-    sort_constructors_first: true
-    sort_pub_dependencies: true
+code-style:
+  format: true
+
+formatter:
+  page_width: 120
+  trailing_commas: automate

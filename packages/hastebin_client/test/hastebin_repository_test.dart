@@ -59,10 +59,7 @@ void main() {
           const testContent = 'Test content';
 
           // Since HASTEBIN_API_KEY is not set in test environment, this should throw
-          expect(
-            () => repository.createDocument(testContent),
-            throwsA(isA<HastebinAuthenticationException>()),
-          );
+          expect(() => repository.createDocument(testContent), throwsA(isA<HastebinAuthenticationException>()));
         });
       });
 
@@ -70,10 +67,7 @@ void main() {
         test('throws HastebinAuthenticationException when API key is missing', () async {
           const testKey = 'abc123';
 
-          expect(
-            () => repository.getDocument(testKey),
-            throwsA(isA<HastebinAuthenticationException>()),
-          );
+          expect(() => repository.getDocument(testKey), throwsA(isA<HastebinAuthenticationException>()));
         });
       });
 
@@ -81,10 +75,7 @@ void main() {
         test('throws HastebinAuthenticationException when API key is missing', () async {
           const testKey = 'abc123';
 
-          expect(
-            () => repository.getDocumentWithMetadata(testKey),
-            throwsA(isA<HastebinAuthenticationException>()),
-          );
+          expect(() => repository.getDocumentWithMetadata(testKey), throwsA(isA<HastebinAuthenticationException>()));
         });
       });
     });
@@ -92,10 +83,7 @@ void main() {
 
   group('Model Tests', () {
     test('HastebinDocument JSON serialization', () {
-      const document = HastebinDocument(
-        key: 'test123',
-        content: 'Test content',
-      );
+      const document = HastebinDocument(key: 'test123', content: 'Test content');
 
       final json = document.toJson();
       expect(json['key'], equals('test123'));

@@ -10,7 +10,7 @@ class HastebinRepository implements HastebinRepositoryInterface {
   Future<String> createDocument(String content) async {
     // Simulate network delay
     await Future.delayed(const Duration(milliseconds: 100));
-    
+
     // Return a mock key based on content hash
     final mockKey = content.hashCode.abs().toString();
     return mockKey;
@@ -20,7 +20,7 @@ class HastebinRepository implements HastebinRepositoryInterface {
   Future<String> getDocument(String key) async {
     // Simulate network delay
     await Future.delayed(const Duration(milliseconds: 100));
-    
+
     // Return mock content
     return 'Mock content for key: $key';
   }
@@ -29,12 +29,9 @@ class HastebinRepository implements HastebinRepositoryInterface {
   Future<HastebinDocument> getDocumentWithMetadata(String key) async {
     // Simulate network delay
     await Future.delayed(const Duration(milliseconds: 100));
-    
+
     // Return mock document
-    final document = HastebinDocument(
-      key: key,
-      content: 'Mock content for key: $key',
-    );
+    final document = HastebinDocument(key: key, content: 'Mock content for key: $key');
     return document;
   }
 }

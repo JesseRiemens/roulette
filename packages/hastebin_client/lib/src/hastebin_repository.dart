@@ -1,7 +1,6 @@
 import 'hastebin_models.dart';
 // Conditional import for HastebinRepository
-import 'hastebin_repository_stub.dart'
-    if (dart.library.html) 'hastebin_repository_impl.dart';
+export 'hastebin_repository_stub.dart' if (dart.library.html) 'hastebin_repository_impl.dart';
 
 /// Interface for hastebin operations following the existing data layer pattern
 abstract interface class HastebinRepositoryInterface {
@@ -22,6 +21,3 @@ abstract interface class HastebinRepositoryInterface {
   /// Throws [HastebinException] if the operation fails
   Future<HastebinDocument> getDocumentWithMetadata(String key);
 }
-
-/// Global instance of hastebin repository following existing pattern
-const HastebinRepositoryInterface hastebinRepository = HastebinRepository();

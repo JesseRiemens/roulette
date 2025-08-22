@@ -11,7 +11,7 @@ class HastebinRepository implements HastebinRepositoryInterface {
 
   // Get API key from compile-time constant or environment
   static const String _apiKey = String.fromEnvironment('HASTEBIN_API_KEY');
-  
+
   String get _resolvedApiKey {
     if (_apiKey.isEmpty) {
       throw const HastebinAuthenticationException();
@@ -25,10 +25,7 @@ class HastebinRepository implements HastebinRepositoryInterface {
       final client = http.Client();
       final response = await client.post(
         Uri.parse('https://hastebin.com/documents'),
-        headers: {
-          'Authorization': 'Bearer $_resolvedApiKey',
-          'Content-Type': 'text/plain',
-        },
+        headers: {'Authorization': 'Bearer $_resolvedApiKey', 'Content-Type': 'text/plain'},
         body: content,
       );
       client.close();
@@ -40,10 +37,7 @@ class HastebinRepository implements HastebinRepositoryInterface {
       } else if (response.statusCode == 401) {
         throw const HastebinAuthenticationException();
       } else {
-        throw HastebinException(
-          'Failed to create document: ${response.body}',
-          response.statusCode,
-        );
+        throw HastebinException('Failed to create document: ${response.body}', response.statusCode);
       }
     } catch (e) {
       if (e is HastebinException) rethrow;
@@ -68,10 +62,7 @@ class HastebinRepository implements HastebinRepositoryInterface {
       } else if (response.statusCode == 401) {
         throw const HastebinAuthenticationException();
       } else {
-        throw HastebinException(
-          'Failed to get document: ${response.body}',
-          response.statusCode,
-        );
+        throw HastebinException('Failed to get document: ${response.body}', response.statusCode);
       }
     } catch (e) {
       if (e is HastebinException) rethrow;
@@ -91,20 +82,14 @@ class HastebinRepository implements HastebinRepositoryInterface {
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body) as Map<String, dynamic>;
-        final document = HastebinDocument(
-          key: key,
-          content: jsonResponse['data'] as String,
-        );
+        final document = HastebinDocument(key: key, content: jsonResponse['data'] as String);
         return document;
       } else if (response.statusCode == 404) {
         throw HastebinDocumentNotFoundException(key);
       } else if (response.statusCode == 401) {
         throw const HastebinAuthenticationException();
       } else {
-        throw HastebinException(
-          'Failed to get document: ${response.body}',
-          response.statusCode,
-        );
+        throw HastebinException('Failed to get document: ${response.body}', response.statusCode);
       }
     } catch (e) {
       if (e is HastebinException) rethrow;

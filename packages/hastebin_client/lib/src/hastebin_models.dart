@@ -1,46 +1,31 @@
 /// Represents a hastebin document for sharing data
 class HastebinDocument {
-  const HastebinDocument({
-    required this.key,
-    required this.content,
-  });
+  const HastebinDocument({required this.key, required this.content});
 
   factory HastebinDocument.fromJson(Map<String, dynamic> json) {
-    return HastebinDocument(
-      key: json['key'] as String,
-      content: json['content'] as String,
-    );
+    return HastebinDocument(key: json['key'] as String, content: json['content'] as String);
   }
 
   final String key;
   final String content;
 
   Map<String, dynamic> toJson() {
-    return {
-      'key': key,
-      'content': content,
-    };
+    return {'key': key, 'content': content};
   }
 }
 
 /// Response from hastebin when creating a document
 class HastebinCreateResponse {
-  const HastebinCreateResponse({
-    required this.key,
-  });
+  const HastebinCreateResponse({required this.key});
 
   factory HastebinCreateResponse.fromJson(Map<String, dynamic> json) {
-    return HastebinCreateResponse(
-      key: json['key'] as String,
-    );
+    return HastebinCreateResponse(key: json['key'] as String);
   }
 
   final String key;
 
   Map<String, dynamic> toJson() {
-    return {
-      'key': key,
-    };
+    return {'key': key};
   }
 }
 
@@ -62,12 +47,10 @@ class HastebinException implements Exception {
 
 /// Exception thrown when a document is not found
 class HastebinDocumentNotFoundException extends HastebinException {
-  const HastebinDocumentNotFoundException(String key) 
-      : super('Document not found: $key', 404);
+  const HastebinDocumentNotFoundException(String key) : super('Document not found: $key', 404);
 }
 
 /// Exception thrown when authentication fails
 class HastebinAuthenticationException extends HastebinException {
-  const HastebinAuthenticationException() 
-      : super('Authentication failed - invalid or missing API key', 401);
+  const HastebinAuthenticationException() : super('Authentication failed - invalid or missing API key', 401);
 }
