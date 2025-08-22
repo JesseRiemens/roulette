@@ -14,9 +14,9 @@ void main() {
   setUpAll(() async {
     await initHydratedStorage();
   });
-  testWidgets(
-      'RouletteScreen shows EditingWidget and RouletteWidget conditionally (Cubit)',
-      (WidgetTester tester) async {
+  testWidgets('RouletteScreen shows EditingWidget and RouletteWidget conditionally (Cubit)', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       BlocProvider(
         create: (_) => StorageCubit(),

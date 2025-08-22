@@ -10,14 +10,8 @@ void main() {
   setUpAll(() async {
     await initHydratedStorage();
   });
-  testWidgets('MainApp builds and shows MaterialApp',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(
-      BlocProvider<StorageCubit>(
-        create: (_) => StorageCubit(),
-        child: const MainApp(),
-      ),
-    );
+  testWidgets('MainApp builds and shows MaterialApp', (WidgetTester tester) async {
+    await tester.pumpWidget(BlocProvider<StorageCubit>(create: (_) => StorageCubit(), child: const MainApp()));
     expect(find.byType(MaterialApp), findsOneWidget);
   });
 }

@@ -13,8 +13,7 @@ void main() {
   setUpAll(() async {
     await initHydratedStorage();
   });
-  testWidgets('EditingWidget and RouletteWidget update via cubit',
-      (WidgetTester tester) async {
+  testWidgets('EditingWidget and RouletteWidget update via cubit', (WidgetTester tester) async {
     await tester.pumpWidget(
       BlocProvider(
         create: (_) => StorageCubit(),
@@ -47,13 +46,11 @@ void main() {
     // Now, RouletteWidget should be shown
     expect(find.byType(RouletteWidget), findsOneWidget);
     expect(
-      find.byWidgetPredicate((widget) =>
-          widget is RichText && widget.text.toPlainText().contains('Apple')),
+      find.byWidgetPredicate((widget) => widget is RichText && widget.text.toPlainText().contains('Apple')),
       findsOneWidget,
     );
     expect(
-      find.byWidgetPredicate((widget) =>
-          widget is RichText && widget.text.toPlainText().contains('Banana')),
+      find.byWidgetPredicate((widget) => widget is RichText && widget.text.toPlainText().contains('Banana')),
       findsOneWidget,
     );
   });

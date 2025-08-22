@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:webroulette/l10n/app_localizations.dart';
 
 class EditingWidget extends StatefulWidget {
-  const EditingWidget({
-    Key? key,
-    required this.items,
-    required this.onItemsChanged,
-    required this.backgroundColor,
-  }) : super(key: key);
+  const EditingWidget({Key? key, required this.items, required this.onItemsChanged, required this.backgroundColor})
+    : super(key: key);
 
   final List<String> items;
   final Function(List<String>) onItemsChanged;
@@ -68,18 +64,12 @@ class _EditingWidgetBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle unifiedTextStyle = TextStyle(
-      color: Theme.of(context).colorScheme.onPrimaryContainer,
-      fontSize: 16,
-    );
+    TextStyle unifiedTextStyle = TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontSize: 16);
 
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer,
-        border: Border.all(
-          color: Theme.of(context).colorScheme.onPrimaryContainer,
-          width: 2,
-        ),
+        border: Border.all(color: Theme.of(context).colorScheme.onPrimaryContainer, width: 2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Padding(
@@ -94,10 +84,7 @@ class _EditingWidgetBody extends StatelessWidget {
                   hintStyle: unifiedTextStyle.copyWith(color: Colors.grey),
                   hintText: AppLocalizations.of(context)!.beCreative,
                   contentPadding: const EdgeInsets.all(8),
-                  label: Text(
-                    AppLocalizations.of(context)!.enterAnItem,
-                    style: unifiedTextStyle,
-                  ),
+                  label: Text(AppLocalizations.of(context)!.enterAnItem, style: unifiedTextStyle),
                   alignLabelWithHint: true,
                 ),
                 controller: textController,
@@ -131,10 +118,7 @@ class _EditingWidgetBody extends StatelessWidget {
                   });
                 }
               },
-              child: Text(
-                AppLocalizations.of(context)!.add,
-                style: unifiedTextStyle,
-              ),
+              child: Text(AppLocalizations.of(context)!.add, style: unifiedTextStyle),
             ),
             const SizedBox(height: 10),
             _buildListView(context, unifiedTextStyle, items, onItemsChanged),
@@ -173,10 +157,7 @@ class _EditingWidgetBody extends StatelessWidget {
                   index: index,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: Icon(
-                      Icons.drag_handle,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+                    child: Icon(Icons.drag_handle, color: Theme.of(context).colorScheme.primary),
                   ),
                 ),
                 IconButton(
@@ -186,15 +167,10 @@ class _EditingWidgetBody extends StatelessWidget {
                     final newValue = await showDialog<String>(
                       context: context,
                       builder: (context) {
-                        final controller = TextEditingController(
-                          text: items[index],
-                        );
+                        final controller = TextEditingController(text: items[index]);
                         return AlertDialog(
                           title: const Text('Edit Item'),
-                          insetPadding: const EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 80,
-                          ),
+                          insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 80),
                           content: ConstrainedBox(
                             constraints: BoxConstraints(
                               minWidth: 200,
@@ -207,31 +183,23 @@ class _EditingWidgetBody extends StatelessWidget {
                               autofocus: true,
                               maxLines: null,
                               expands: true,
-                              decoration: const InputDecoration(
-                                labelText: 'Edit Item',
-                              ),
+                              decoration: const InputDecoration(labelText: 'Edit Item'),
                               onSubmitted: (value) {
                                 Navigator.of(context).pop(value);
                               },
                             ),
                           ),
                           actions: [
+                            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
                             TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () =>
-                                  Navigator.of(context).pop(controller.text),
+                              onPressed: () => Navigator.of(context).pop(controller.text),
                               child: const Text('Save'),
                             ),
                           ],
                         );
                       },
                     );
-                    if (newValue != null &&
-                        newValue.trim().isNotEmpty &&
-                        newValue != items[index]) {
+                    if (newValue != null && newValue.trim().isNotEmpty && newValue != items[index]) {
                       final newItems = List<String>.from(items);
                       newItems[index] = newValue.trim();
                       onItemsChanged(newItems);
@@ -248,10 +216,7 @@ class _EditingWidgetBody extends StatelessWidget {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4.0,
-                      vertical: 2.0,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
                     child: RichText(
                       text: TextSpan(
                         children: [

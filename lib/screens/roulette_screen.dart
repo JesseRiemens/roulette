@@ -26,8 +26,7 @@ class RouletteScreen extends StatelessWidget {
                   // Copy URL button
                   _buildCopyButton(context),
                   _buildEditWidget(rouletteItems, context),
-                  if (rouletteItems.length > 1)
-                    RouletteWidget(rouletteItems: rouletteItems),
+                  if (rouletteItems.length > 1) RouletteWidget(rouletteItems: rouletteItems),
                 ],
               );
             },
@@ -44,8 +43,7 @@ class RouletteScreen extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: EditingWidget(
           items: rouletteItems,
-          onItemsChanged: (items) =>
-              context.read<StorageCubit>().saveItems(items),
+          onItemsChanged: (items) => context.read<StorageCubit>().saveItems(items),
           backgroundColor: Theme.of(context).colorScheme.onSurface,
         ),
       ),
@@ -62,9 +60,7 @@ class RouletteScreen extends StatelessWidget {
           final uri = context.read<StorageCubit>().uriWithData;
           Clipboard.setData(ClipboardData(text: uri.toString())).then(
             (_) => context.mounted
-                ? ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('URL copied to clipboard!')),
-                  )
+                ? ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('URL copied to clipboard!')))
                 : null,
           );
         },
