@@ -56,13 +56,30 @@ class RouletteScreen extends StatelessWidget {
       child: ElevatedButton.icon(
         icon: const Icon(Icons.copy),
         label: const Text('Copy URL'),
-        onPressed: () {
-          final uri = context.read<StorageCubit>().uriWithData;
-          Clipboard.setData(ClipboardData(text: uri.toString())).then(
-            (_) => context.mounted
-                ? ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('URL copied to clipboard!')))
-                : null,
-          );
+        onPressed: () async {
+          try {
+            // Use Hastebin for URL generation
+            final hastebinUri = await context.read<StorageCubit>().generateHastebinUrl();
+            await Clipboard.setData(ClipboardData(text: hastebinUri.toString()));
+            
+            // Check if context is still mounted before using it
+            if (!context.mounted) return;
+            
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('URL copied to clipboard!')),
+            );
+          } catch (e) {
+            // Check if context is still mounted before using it
+            if (!context.mounted) return;
+            
+            // Fallback to legacy URL if Hastebin fails
+            final uri = context.read<StorageCubit>().uriWithData;
+            await Clipboard.setData(ClipboardData(text: uri.toString()));
+            
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('URL copied to clipboard! (Note: Hastebin upload failed: $e)')),
+            );
+          }
         },
       ),
     );
