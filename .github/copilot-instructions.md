@@ -199,8 +199,6 @@ GitHub Actions workflow (`.github/workflows/flutter.yml`):
 
 ## Known Issues and Limitations
 
-## Known Issues and Limitations
-
 ### Environment-Specific Issues
 - **Code Generation**: `dart run build_runner` may fail in some containerized environments
   - Generated files are already committed, so regeneration is typically not needed
