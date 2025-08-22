@@ -1,8 +1,5 @@
 /// Represents a hastebin document for sharing data
 class HastebinDocument {
-  final String key;
-  final String content;
-
   const HastebinDocument({
     required this.key,
     required this.content,
@@ -15,6 +12,9 @@ class HastebinDocument {
     );
   }
 
+  final String key;
+  final String content;
+
   Map<String, dynamic> toJson() {
     return {
       'key': key,
@@ -25,8 +25,6 @@ class HastebinDocument {
 
 /// Response from hastebin when creating a document
 class HastebinCreateResponse {
-  final String key;
-
   const HastebinCreateResponse({
     required this.key,
   });
@@ -37,6 +35,8 @@ class HastebinCreateResponse {
     );
   }
 
+  final String key;
+
   Map<String, dynamic> toJson() {
     return {
       'key': key,
@@ -46,10 +46,10 @@ class HastebinCreateResponse {
 
 /// Exception thrown when hastebin operations fail
 class HastebinException implements Exception {
+  const HastebinException(this.message, [this.statusCode]);
+
   final String message;
   final int? statusCode;
-
-  const HastebinException(this.message, [this.statusCode]);
 
   @override
   String toString() {

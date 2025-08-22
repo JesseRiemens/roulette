@@ -10,19 +10,14 @@ class HastebinRepository implements HastebinRepositoryInterface {
   const HastebinRepository();
 
   // Get API key from compile-time constant or environment
-  static const String? _apiKey = String.fromEnvironment('HASTEBIN_API_KEY');
+  static const String _apiKey = String.fromEnvironment('HASTEBIN_API_KEY');
   
   String get _resolvedApiKey {
-    if (_apiKey == null || _apiKey!.isEmpty) {
+    if (_apiKey.isEmpty) {
       throw const HastebinAuthenticationException();
     }
-    return _apiKey!;
+    return _apiKey;
   }
-
-  Map<String, String> get _authHeaders => {
-    'Authorization': 'Bearer $_resolvedApiKey',
-    'Content-Type': 'application/json',
-  };
 
   @override
   Future<String> createDocument(String content) async {
