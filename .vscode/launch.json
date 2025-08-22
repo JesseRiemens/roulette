@@ -7,19 +7,28 @@
         {
             "name": "roulette",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define=HASTEBIN_API_KEY=${env:HASTEBIN_API_KEY}"
+            ]
         },
         {
             "name": "roulette (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "toolArgs": [
+                "--dart-define=HASTEBIN_API_KEY=${env:HASTEBIN_API_KEY}"
+            ]
         },
         {
             "name": "roulette (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "toolArgs": [
+                "--dart-define=HASTEBIN_API_KEY=${env:HASTEBIN_API_KEY}"
+            ]
         }
     ]
 }

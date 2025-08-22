@@ -1,0 +1,8 @@
+include: package:flutter_lints/flutter.yaml
+
+code-style:
+  format: true
+
+formatter:
+  page_width: 120
+  trailing_commas: automate
