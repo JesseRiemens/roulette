@@ -7,13 +7,23 @@ import 'hastebin_repository.dart';
 class HastebinRepository implements HastebinRepositoryInterface {
   const HastebinRepository();
 
+  static const String _apiKey = '9df800211d9ea3d8648c06becb87676a9f31653305e30c5efd9da87a2e3574ca9a39e3f0d9514195ac68edb1b4b47123838e365e01152b5b9c4bbdc0';
+  
+  Map<String, String> get _authHeaders => {
+    'Authorization': 'Bearer $_apiKey',
+    'Content-Type': 'application/json',
+  };
+
   @override
   Future<HastebinResult<String>> createDocument(String content) async {
     try {
       final client = http.Client();
       final response = await client.post(
         Uri.parse('https://hastebin.com/documents'),
-        headers: {'Content-Type': 'text/plain'},
+        headers: {
+          'Authorization': 'Bearer $_apiKey',
+          'Content-Type': 'text/plain',
+        },
         body: content,
       );
       client.close();
@@ -24,7 +34,7 @@ class HastebinRepository implements HastebinRepositoryInterface {
         return HastebinResult.success(hastebinResponse.key);
       } else {
         return HastebinResult.failure(
-          'Failed to create document: HTTP ${response.statusCode}',
+          'Failed to create document: HTTP ${response.statusCode} - ${response.body}',
         );
       }
     } catch (e) {
@@ -38,6 +48,7 @@ class HastebinRepository implements HastebinRepositoryInterface {
       final client = http.Client();
       final response = await client.get(
         Uri.parse('https://hastebin.com/raw/$key'),
+        headers: {'Authorization': 'Bearer $_apiKey'},
       );
       client.close();
 
@@ -47,7 +58,7 @@ class HastebinRepository implements HastebinRepositoryInterface {
         return HastebinResult.failure('Document not found');
       } else {
         return HastebinResult.failure(
-          'Failed to get document: HTTP ${response.statusCode}',
+          'Failed to get document: HTTP ${response.statusCode} - ${response.body}',
         );
       }
     } catch (e) {
@@ -63,6 +74,7 @@ class HastebinRepository implements HastebinRepositoryInterface {
       final client = http.Client();
       final response = await client.get(
         Uri.parse('https://hastebin.com/documents/$key'),
+        headers: {'Authorization': 'Bearer $_apiKey'},
       );
       client.close();
 
@@ -77,7 +89,7 @@ class HastebinRepository implements HastebinRepositoryInterface {
         return HastebinResult.failure('Document not found');
       } else {
         return HastebinResult.failure(
-          'Failed to get document: HTTP ${response.statusCode}',
+          'Failed to get document: HTTP ${response.statusCode} - ${response.body}',
         );
       }
     } catch (e) {
