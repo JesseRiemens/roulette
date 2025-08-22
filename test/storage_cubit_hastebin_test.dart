@@ -148,7 +148,12 @@ void main() {
         cubit.saveItems(['Apple']);
         mockService.setNextException(const HastebinException('Upload failed'));
         
-        expect(() => cubit.shareItems(), throwsA(isA<HastebinException>()));
+        try {
+          await cubit.shareItems();
+          fail('Expected HastebinException to be thrown');
+        } catch (e) {
+          expect(e, isA<HastebinException>());
+        }
         
         // State should reflect the error
         expect(cubit.state.isUploading, isFalse);
@@ -160,7 +165,12 @@ void main() {
         cubit.saveItems(['Apple']);
         mockService.setNextException(const HastebinAuthenticationException());
         
-        expect(() => cubit.shareItems(), throwsA(isA<HastebinAuthenticationException>()));
+        try {
+          await cubit.shareItems();
+          fail('Expected HastebinAuthenticationException to be thrown');
+        } catch (e) {
+          expect(e, isA<HastebinAuthenticationException>());
+        }
         
         expect(cubit.state.error, contains('Authentication failed'));
       });
@@ -169,7 +179,12 @@ void main() {
         cubit.saveItems(['Apple']);
         mockService.setNextException(Exception('Network error'));
         
-        expect(() => cubit.shareItems(), throwsA(isA<Exception>()));
+        try {
+          await cubit.shareItems();
+          fail('Expected Exception to be thrown');
+        } catch (e) {
+          expect(e, isA<Exception>());
+        }
         
         expect(cubit.state.error, contains('Unexpected error'));
       });
