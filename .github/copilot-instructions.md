@@ -37,7 +37,10 @@ flutter test
 
 # Run analysis (linting) - takes 10-30 seconds
 # Clean output with no issues when dependencies are properly resolved
-flutter analyze --no-fatal-infos
+flutter analyze
+
+# Format the code
+dart format
 
 # Clean build artifacts when needed
 flutter clean
@@ -98,11 +101,12 @@ Always test these scenarios after making changes:
    - Check that Dutch localization exists (though may have untranslated messages)
 
 ### Required Pre-commit Validation
-- **Recommended**: Run `flutter analyze --no-fatal-infos` (should show no issues)
 - **Critical**: Verify the application builds successfully with either:
   - `flutter build web --debug` (faster build)
   - `flutter build web --release` (production build)
-- **Recommended**: Run `flutter test` if in a standard Flutter environment
+  - `dart format`
+  - `flutter analyze`
+  - `flutter test`
 - **Manual**: Always test the application functionality using the validation scenarios above
 
 ## Common Tasks
@@ -119,13 +123,6 @@ dart run build_runner build --delete-conflicting-outputs
 dart run build_runner clean
 dart run build_runner build --delete-conflicting-outputs
 ```
-
-**Generated files (currently committed, but planned for removal):**
-- `lib/bloc/storage_bloc.freezed.dart`
-- `lib/bloc/storage_bloc.g.dart`
-- `lib/l10n/app_localizations.dart`
-- `lib/l10n/app_localizations_en.dart`
-- `lib/l10n/app_localizations_nl.dart`
 
 ### Adding New Features
 - State management uses BLoC pattern with `StorageCubit` in `lib/bloc/storage_bloc.dart`

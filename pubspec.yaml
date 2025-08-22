@@ -41,3 +41,6 @@ flutter:
 flutter_intl:
   enabled: true
   class_name: AppLocalizations
+
+workspace:
+  - packages/hastebin_client
