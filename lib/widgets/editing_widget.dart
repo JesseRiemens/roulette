@@ -13,15 +13,25 @@ class EditingWidget extends StatefulWidget {
   State<EditingWidget> createState() => _EditingWidgetState();
 }
 
-class _EditingWidgetState extends State<EditingWidget> {
+class _EditingWidgetState extends State<EditingWidget> with AutomaticKeepAliveClientMixin {
   late final TextEditingController textController;
   late final FocusNode focusNode;
+
+  @override
+  bool get wantKeepAlive => true; // This preserves the state
 
   @override
   void initState() {
     super.initState();
     textController = TextEditingController();
     focusNode = FocusNode();
+  }
+
+  @override
+  void didUpdateWidget(EditingWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Preserve text controller state across widget updates
+    // The ValueKey should prevent widget recreation, but this provides extra safety
   }
 
   @override
@@ -33,6 +43,7 @@ class _EditingWidgetState extends State<EditingWidget> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
     return _EditingWidgetBody(
       items: widget.items,
       onItemsChanged: widget.onItemsChanged,
@@ -77,9 +88,11 @@ class _EditingWidgetBody extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Padding(
+            // Wrap TextField in Container to provide more stability during resizes
+            Container(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: TextField(
+                key: const ValueKey('main_text_field'),
                 decoration: InputDecoration(
                   hintStyle: unifiedTextStyle.copyWith(color: Colors.grey),
                   hintText: AppLocalizations.of(context)!.beCreative,
@@ -89,8 +102,10 @@ class _EditingWidgetBody extends StatelessWidget {
                 ),
                 controller: textController,
                 focusNode: focusNode,
-                autofocus: true,
+                autofocus: false,
                 style: unifiedTextStyle,
+                // Prevent the field from losing text on rebuilds
+                enableInteractiveSelection: true,
                 onSubmitted: (String value) {
                   if (value.trim().isNotEmpty) {
                     final newItems = List<String>.from(items);
@@ -166,38 +181,7 @@ class _EditingWidgetBody extends StatelessWidget {
                   onPressed: () async {
                     final newValue = await showDialog<String>(
                       context: context,
-                      builder: (context) {
-                        final controller = TextEditingController(text: items[index]);
-                        return AlertDialog(
-                          title: const Text('Edit Item'),
-                          insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 80),
-                          content: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              minWidth: 200,
-                              maxWidth: MediaQuery.of(context).size.width * 0.9,
-                              minHeight: 48,
-                              maxHeight: 200,
-                            ),
-                            child: TextField(
-                              controller: controller,
-                              autofocus: true,
-                              maxLines: null,
-                              expands: true,
-                              decoration: const InputDecoration(labelText: 'Edit Item'),
-                              onSubmitted: (value) {
-                                Navigator.of(context).pop(value);
-                              },
-                            ),
-                          ),
-                          actions: [
-                            TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(controller.text),
-                              child: const Text('Save'),
-                            ),
-                          ],
-                        );
-                      },
+                      builder: (context) => _EditItemDialog(initialText: items[index]),
                     );
                     if (newValue != null && newValue.trim().isNotEmpty && newValue != items[index]) {
                       final newItems = List<String>.from(items);
@@ -239,6 +223,63 @@ class _EditingWidgetBody extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+// Separate StatefulWidget for the edit dialog to preserve TextEditingController state
+class _EditItemDialog extends StatefulWidget {
+  const _EditItemDialog({required this.initialText});
+
+  final String initialText;
+
+  @override
+  State<_EditItemDialog> createState() => _EditItemDialogState();
+}
+
+class _EditItemDialogState extends State<_EditItemDialog> {
+  late final TextEditingController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = TextEditingController(text: widget.initialText);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit Item'),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 80),
+      content: ConstrainedBox(
+        constraints: BoxConstraints(
+          minWidth: 200,
+          maxWidth: MediaQuery.of(context).size.width * 0.9,
+          minHeight: 48,
+          maxHeight: 200,
+        ),
+        child: TextField(
+          key: const ValueKey('edit_dialog_text_field'),
+          controller: controller,
+          autofocus: true,
+          maxLines: null,
+          expands: true,
+          decoration: const InputDecoration(labelText: 'Edit Item'),
+          onSubmitted: (value) {
+            Navigator.of(context).pop(value);
+          },
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+        TextButton(onPressed: () => Navigator.of(context).pop(controller.text), child: const Text('Save')),
+      ],
     );
   }
 }

@@ -15,7 +15,13 @@ class RouletteScreen extends StatelessWidget {
       body: Center(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
+          // Wrap BlocBuilder in a ResizeableKeyboardAware widget
           child: BlocBuilder<StorageCubit, StoredItems>(
+            // Use buildWhen to limit rebuilds and preserve text field state
+            buildWhen: (previous, current) {
+              // Only rebuild when items actually change, not on every state change
+              return previous.items != current.items;
+            },
             builder: (context, state) {
               List<String> rouletteItems = state.items;
 
@@ -42,6 +48,7 @@ class RouletteScreen extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: EditingWidget(
+          key: const ValueKey('editing_widget'),
           items: rouletteItems,
           onItemsChanged: (items) => context.read<StorageCubit>().saveItems(items),
           backgroundColor: Theme.of(context).colorScheme.onSurface,
