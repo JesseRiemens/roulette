@@ -101,12 +101,14 @@ Always test these scenarios after making changes:
    - Check that Dutch localization exists (though may have untranslated messages)
 
 ### Required Pre-commit Validation
-- **Critical**: Verify the application builds successfully with either:
+- **Critical**: Verify the application builds successfully with:
   - `flutter build web --debug` (faster build)
   - `flutter build web --release` (production build)
-  - `dart format`
+  **Critical**: Pre-commit run these commands to ensure code quality:
+  - `dart format .`
   - `flutter analyze`
   - `flutter test`
+  Otherwise pipeline checks will fail
 - **Manual**: Always test the application functionality using the validation scenarios above
 
 ## Common Tasks
