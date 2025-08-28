@@ -13,29 +13,25 @@ class EditingWidget extends StatefulWidget {
   State<EditingWidget> createState() => _EditingWidgetState();
 }
 
-class _EditingWidgetState extends State<EditingWidget> {
+class _EditingWidgetState extends State<EditingWidget> with AutomaticKeepAliveClientMixin {
   late final TextEditingController textController;
   late final FocusNode focusNode;
+
+  @override
+  bool get wantKeepAlive => true; // This preserves the state
 
   @override
   void initState() {
     super.initState();
     textController = TextEditingController();
     focusNode = FocusNode();
-    
-    // Add debug logging to track when controller is reset
-    textController.addListener(() {
-      print('[EditingWidget] Text changed: "${textController.text}"');
-    });
   }
 
   @override
   void didUpdateWidget(EditingWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Debug: Log when widget updates
-    print('[EditingWidget] didUpdateWidget called, current text: "${textController.text}"');
-    // Don't reset the text controller when the widget updates
-    // The key should preserve this widget, but let's be extra safe
+    // Preserve text controller state across widget updates
+    // The ValueKey should prevent widget recreation, but this provides extra safety
   }
 
   @override
@@ -47,6 +43,7 @@ class _EditingWidgetState extends State<EditingWidget> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
     return _EditingWidgetBody(
       items: widget.items,
       onItemsChanged: widget.onItemsChanged,

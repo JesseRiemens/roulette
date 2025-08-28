@@ -15,7 +15,13 @@ class RouletteScreen extends StatelessWidget {
       body: Center(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
+          // Wrap BlocBuilder in a ResizeableKeyboardAware widget
           child: BlocBuilder<StorageCubit, StoredItems>(
+            // Use buildWhen to limit rebuilds and preserve text field state
+            buildWhen: (previous, current) {
+              // Only rebuild when items actually change, not on every state change
+              return previous.items != current.items;
+            },
             builder: (context, state) {
               List<String> rouletteItems = state.items;
 
