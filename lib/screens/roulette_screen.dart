@@ -42,6 +42,7 @@ class RouletteScreen extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: EditingWidget(
+          key: const ValueKey('editing_widget'),
           items: rouletteItems,
           onItemsChanged: (items) => context.read<StorageCubit>().saveItems(items),
           backgroundColor: Theme.of(context).colorScheme.onSurface,
