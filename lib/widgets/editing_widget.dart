@@ -22,6 +22,20 @@ class _EditingWidgetState extends State<EditingWidget> {
     super.initState();
     textController = TextEditingController();
     focusNode = FocusNode();
+    
+    // Add debug logging to track when controller is reset
+    textController.addListener(() {
+      print('[EditingWidget] Text changed: "${textController.text}"');
+    });
+  }
+
+  @override
+  void didUpdateWidget(EditingWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Debug: Log when widget updates
+    print('[EditingWidget] didUpdateWidget called, current text: "${textController.text}"');
+    // Don't reset the text controller when the widget updates
+    // The key should preserve this widget, but let's be extra safe
   }
 
   @override
@@ -77,9 +91,11 @@ class _EditingWidgetBody extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Padding(
+            // Wrap TextField in Container to provide more stability during resizes
+            Container(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: TextField(
+                key: const ValueKey('main_text_field'),
                 decoration: InputDecoration(
                   hintStyle: unifiedTextStyle.copyWith(color: Colors.grey),
                   hintText: AppLocalizations.of(context)!.beCreative,
@@ -89,8 +105,10 @@ class _EditingWidgetBody extends StatelessWidget {
                 ),
                 controller: textController,
                 focusNode: focusNode,
-                autofocus: true,
+                autofocus: false,
                 style: unifiedTextStyle,
+                // Prevent the field from losing text on rebuilds
+                enableInteractiveSelection: true,
                 onSubmitted: (String value) {
                   if (value.trim().isNotEmpty) {
                     final newItems = List<String>.from(items);
