@@ -8,7 +8,6 @@ void main() {
   group('Edit Dialog Stability Tests', () {
     testWidgets('Edit dialog preserves text during window resize', (WidgetTester tester) async {
       List<String> items = ['abc'];
-      List<String> changedItems = [];
 
       await tester.pumpWidget(
         MaterialApp(
@@ -20,11 +19,7 @@ void main() {
           supportedLocales: const [Locale('en')],
           locale: const Locale('en'),
           home: Scaffold(
-            body: EditingWidget(
-              items: items,
-              onItemsChanged: (newItems) => changedItems = newItems,
-              backgroundColor: Colors.blue,
-            ),
+            body: EditingWidget(items: items, onItemsChanged: (newItems) => newItems, backgroundColor: Colors.blue),
           ),
         ),
       );
@@ -74,7 +69,6 @@ void main() {
 
     testWidgets('Edit dialog handles rapid rebuilds without losing text', (WidgetTester tester) async {
       List<String> items = ['original text'];
-      List<String> changedItems = [];
 
       await tester.pumpWidget(
         MaterialApp(
@@ -86,11 +80,7 @@ void main() {
           supportedLocales: const [Locale('en')],
           locale: const Locale('en'),
           home: Scaffold(
-            body: EditingWidget(
-              items: items,
-              onItemsChanged: (newItems) => changedItems = newItems,
-              backgroundColor: Colors.blue,
-            ),
+            body: EditingWidget(items: items, onItemsChanged: (newItems) => newItems, backgroundColor: Colors.blue),
           ),
         ),
       );

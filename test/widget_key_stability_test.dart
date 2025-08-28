@@ -34,7 +34,7 @@ void main() {
     // Find the EditingWidget
     final editingWidgetFinder = find.byType(EditingWidget);
     expect(editingWidgetFinder, findsOneWidget);
-    
+
     // Verify it has the expected key
     final editingWidget = tester.widget<EditingWidget>(editingWidgetFinder);
     expect(editingWidget.key, equals(const ValueKey('editing_widget')));
@@ -53,15 +53,15 @@ void main() {
 
     // Trigger multiple state changes to force rebuilds
     final cubit = BlocProvider.of<StorageCubit>(tester.element(find.byType(RouletteScreen)));
-    
+
     // First rebuild
     cubit.saveItems(['Item 1']);
     await tester.pump();
-    
+
     // Second rebuild
     cubit.saveItems(['Item 1', 'Item 2']);
     await tester.pump();
-    
+
     // Third rebuild - remove an item
     cubit.saveItems(['Item 2']);
     await tester.pump();
@@ -69,10 +69,10 @@ void main() {
     // The EditingWidget element and state should be the same (preserved due to key)
     final currentElement = tester.element(editingWidgetFinder);
     final currentState = tester.state(editingWidgetFinder);
-    
+
     expect(currentElement, same(initialElement));
     expect(currentState, same(initialState));
-    
+
     // Most importantly, the text should still be preserved
     expect(find.text('Test text that should be preserved'), findsOneWidget);
   });
@@ -104,22 +104,22 @@ void main() {
     await tester.pump();
 
     final cubit = BlocProvider.of<StorageCubit>(tester.element(find.byType(RouletteScreen)));
-    
+
     // Trigger rebuild while typing
     cubit.saveItems(['Interrupt 1']);
     await tester.pump();
-    
+
     // Continue typing
     await tester.enterText(textField, 'Typing text...');
     await tester.pump();
-    
+
     // Another rebuild
     cubit.saveItems(['Interrupt 1', 'Interrupt 2']);
     await tester.pump();
-    
+
     // Verify text is still preserved and focus is maintained
     expect(find.text('Typing text...'), findsOneWidget);
-    
+
     final textFieldWidget = tester.widget<TextField>(textField);
     expect(textFieldWidget.focusNode?.hasFocus, isTrue);
   });

@@ -181,9 +181,7 @@ class _EditingWidgetBody extends StatelessWidget {
                   onPressed: () async {
                     final newValue = await showDialog<String>(
                       context: context,
-                      builder: (context) => _EditItemDialog(
-                        initialText: items[index],
-                      ),
+                      builder: (context) => _EditItemDialog(initialText: items[index]),
                     );
                     if (newValue != null && newValue.trim().isNotEmpty && newValue != items[index]) {
                       final newItems = List<String>.from(items);
@@ -231,9 +229,7 @@ class _EditingWidgetBody extends StatelessWidget {
 
 // Separate StatefulWidget for the edit dialog to preserve TextEditingController state
 class _EditItemDialog extends StatefulWidget {
-  const _EditItemDialog({
-    required this.initialText,
-  });
+  const _EditItemDialog({required this.initialText});
 
   final String initialText;
 
@@ -281,14 +277,8 @@ class _EditItemDialogState extends State<_EditItemDialog> {
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(controller.text),
-          child: const Text('Save'),
-        ),
+        TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+        TextButton(onPressed: () => Navigator.of(context).pop(controller.text), child: const Text('Save')),
       ],
     );
   }

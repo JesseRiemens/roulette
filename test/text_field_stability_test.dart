@@ -45,7 +45,7 @@ void main() {
 
       // Simulate rapid state changes that might occur during keyboard show/hide
       final cubit = BlocProvider.of<StorageCubit>(tester.element(find.byType(RouletteScreen)));
-      
+
       // Trigger multiple rapid state changes
       for (int i = 0; i < 5; i++) {
         cubit.saveItems(['Rapid change $i']);
@@ -54,7 +54,7 @@ void main() {
 
       // The text should still be preserved
       expect(find.text('Test text that should persist'), findsOneWidget);
-      
+
       // Verify the TextField widget itself is still the same instance
       final textFieldWidget = tester.widget<TextField>(textField);
       expect(textFieldWidget.key, equals(const ValueKey('main_text_field')));
@@ -125,10 +125,10 @@ void main() {
       // Get the initial EditingWidget
       final editingWidgetFinder = find.byType(EditingWidget);
       expect(editingWidgetFinder, findsOneWidget);
-      
+
       final initialEditingWidget = tester.widget<EditingWidget>(editingWidgetFinder);
       final initialElement = tester.element(editingWidgetFinder);
-      
+
       // Verify it has the expected key
       expect(initialEditingWidget.key, equals(const ValueKey('editing_widget')));
 
@@ -145,7 +145,7 @@ void main() {
       // The EditingWidget should maintain its identity
       final currentElement = tester.element(editingWidgetFinder);
       expect(currentElement, same(initialElement));
-      
+
       // And the text should still be there
       expect(find.text('Identity test'), findsOneWidget);
     });
