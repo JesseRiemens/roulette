@@ -123,6 +123,21 @@ class StorageCubit extends HydratedCubit<StoredItems> {
     }
   }
 
+  /// Create shareable URL with items encoded in URL parameters (legacy method)
+  String shareItemsViaUrl() {
+    final currentUri = uriStorage.uri;
+    final shareableUri = currentUri.replace(
+      queryParameters: state.toUriQueryParameters,
+    );
+    
+    emit(state.copyWith(
+      lastSharedUrl: shareableUri.toString(),
+      error: null
+    ));
+    
+    return shareableUri.toString();
+  }
+
   /// Get rate limit status for UI display
   ({int currentRequests, int maxRequests, Duration? waitTime}) getRateLimitStatus() {
     return _hastebinStorageService.getRateLimitStatus();
