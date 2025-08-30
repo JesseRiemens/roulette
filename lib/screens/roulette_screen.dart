@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webroulette/bloc/storage_bloc.dart';
 import 'package:webroulette/widgets/editing_widget.dart';
 import 'package:webroulette/widgets/roulette_widget.dart';
+import 'package:webroulette/l10n/app_localizations.dart';
 
 class RouletteScreen extends StatelessWidget {
   const RouletteScreen({Key? key}) : super(key: key);
@@ -60,15 +61,86 @@ class RouletteScreen extends StatelessWidget {
   Padding _buildCopyButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
-      child: ElevatedButton.icon(
-        icon: const Icon(Icons.copy),
-        label: const Text('Copy URL'),
-        onPressed: () {
-          final uri = context.read<StorageCubit>().uriWithData;
-          Clipboard.setData(ClipboardData(text: uri.toString())).then(
-            (_) => context.mounted
-                ? ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('URL copied to clipboard!')))
-                : null,
+      child: BlocBuilder<StorageCubit, StoredItems>(
+        builder: (context, state) {
+          return Column(
+            children: [
+              // Two buttons side by side
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Share via Hastebin button
+                  ElevatedButton.icon(
+                    icon: state.isUploading
+                        ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                        : const Icon(Icons.cloud_upload),
+                    label: Text(state.isUploading ? 'Sharing...' : AppLocalizations.of(context)!.shareViaHastebin),
+                    onPressed: state.isUploading || state.items.isEmpty
+                        ? null
+                        : () async {
+                            try {
+                              final url = await context.read<StorageCubit>().shareItems();
+                              if (context.mounted) {
+                                await Clipboard.setData(ClipboardData(text: url));
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(const SnackBar(content: Text('Shareable URL copied to clipboard!')));
+                                }
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(SnackBar(content: Text('Failed to share items: ${e.toString()}')));
+                              }
+                            }
+                          },
+                  ),
+                  const SizedBox(width: 12),
+                  // Share via URL button
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.link),
+                    label: Text(AppLocalizations.of(context)!.shareViaUrl),
+                    onPressed: state.items.isEmpty
+                        ? null
+                        : () async {
+                            try {
+                              final url = context.read<StorageCubit>().shareItemsViaUrl();
+                              if (context.mounted) {
+                                await Clipboard.setData(ClipboardData(text: url));
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(const SnackBar(content: Text('Shareable URL copied to clipboard!')));
+                                }
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(SnackBar(content: Text('Failed to share items: ${e.toString()}')));
+                              }
+                            }
+                          },
+                  ),
+                ],
+              ),
+              if (state.error != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    state.error!,
+                    style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              if (state.isLoading)
+                const Padding(
+                  padding: EdgeInsets.only(top: 8.0),
+                  child: Text('Loading shared items...', style: TextStyle(fontSize: 12), textAlign: TextAlign.center),
+                ),
+            ],
           );
         },
       ),
