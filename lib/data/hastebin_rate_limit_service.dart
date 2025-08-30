@@ -12,25 +12,25 @@ class HastebinRateLimitService {
   Future<void> waitForRateLimit() async {
     final now = DateTime.now();
     final cutoff = now.subtract(_timeWindow);
-    
+
     // Remove requests older than 1 minute
     _requestTimes.removeWhere((time) => time.isBefore(cutoff));
-    
+
     // If we're at the limit, wait until the oldest request is over 1 minute old
     if (_requestTimes.length >= _maxRequestsPerMinute) {
       final oldestRequest = _requestTimes.first;
       final waitTime = oldestRequest.add(_timeWindow).difference(now);
-      
+
       if (waitTime.isNegative == false) {
         await Future.delayed(waitTime);
-        
+
         // Remove expired requests after waiting
         final newNow = DateTime.now();
         final newCutoff = newNow.subtract(_timeWindow);
         _requestTimes.removeWhere((time) => time.isBefore(newCutoff));
       }
     }
-    
+
     // Record this request
     _requestTimes.add(DateTime.now());
   }
@@ -48,11 +48,11 @@ class HastebinRateLimitService {
     final now = DateTime.now();
     final cutoff = now.subtract(_timeWindow);
     _requestTimes.removeWhere((time) => time.isBefore(cutoff));
-    
+
     if (_requestTimes.length < _maxRequestsPerMinute) {
       return null; // No wait needed
     }
-    
+
     final oldestRequest = _requestTimes.first;
     final waitTime = oldestRequest.add(_timeWindow).difference(now);
     return waitTime.isNegative ? null : waitTime;

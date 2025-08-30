@@ -71,32 +71,28 @@ class RouletteScreen extends StatelessWidget {
                 children: [
                   // Share via Hastebin button
                   ElevatedButton.icon(
-                    icon: state.isUploading 
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
+                    icon: state.isUploading
+                        ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                         : const Icon(Icons.cloud_upload),
                     label: Text(state.isUploading ? 'Sharing...' : AppLocalizations.of(context)!.shareViaHastebin),
-                    onPressed: state.isUploading || state.items.isEmpty 
-                        ? null 
+                    onPressed: state.isUploading || state.items.isEmpty
+                        ? null
                         : () async {
                             try {
                               final url = await context.read<StorageCubit>().shareItems();
                               if (context.mounted) {
                                 await Clipboard.setData(ClipboardData(text: url));
                                 if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Shareable URL copied to clipboard!')),
-                                  );
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(const SnackBar(content: Text('Shareable URL copied to clipboard!')));
                                 }
                               }
                             } catch (e) {
                               if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Failed to share items: ${e.toString()}')),
-                                );
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(SnackBar(content: Text('Failed to share items: ${e.toString()}')));
                               }
                             }
                           },
@@ -106,24 +102,24 @@ class RouletteScreen extends StatelessWidget {
                   ElevatedButton.icon(
                     icon: const Icon(Icons.link),
                     label: Text(AppLocalizations.of(context)!.shareViaUrl),
-                    onPressed: state.items.isEmpty 
-                        ? null 
+                    onPressed: state.items.isEmpty
+                        ? null
                         : () async {
                             try {
                               final url = context.read<StorageCubit>().shareItemsViaUrl();
                               if (context.mounted) {
                                 await Clipboard.setData(ClipboardData(text: url));
                                 if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Shareable URL copied to clipboard!')),
-                                  );
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(const SnackBar(content: Text('Shareable URL copied to clipboard!')));
                                 }
                               }
                             } catch (e) {
                               if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Failed to share items: ${e.toString()}')),
-                                );
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(SnackBar(content: Text('Failed to share items: ${e.toString()}')));
                               }
                             }
                           },
@@ -135,21 +131,14 @@ class RouletteScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
                     state.error!,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
                     textAlign: TextAlign.center,
                   ),
                 ),
               if (state.isLoading)
                 const Padding(
                   padding: EdgeInsets.only(top: 8.0),
-                  child: Text(
-                    'Loading shared items...',
-                    style: TextStyle(fontSize: 12),
-                    textAlign: TextAlign.center,
-                  ),
+                  child: Text('Loading shared items...', style: TextStyle(fontSize: 12), textAlign: TextAlign.center),
                 ),
             ],
           );

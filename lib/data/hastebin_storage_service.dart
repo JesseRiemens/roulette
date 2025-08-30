@@ -4,16 +4,12 @@ import 'hastebin_rate_limit_service.dart';
 
 /// Service to handle Hastebin storage operations with rate limiting and robust encoding
 class HastebinStorageService {
-  const HastebinStorageService({
-    this.repository = const HastebinRepository(),
-    this.rateLimitService,
-  });
+  const HastebinStorageService({this.repository = const HastebinRepository(), this.rateLimitService});
 
   final HastebinRepositoryInterface repository;
   final HastebinRateLimitService? rateLimitService;
 
-  HastebinRateLimitService get _rateLimitService => 
-      rateLimitService ?? HastebinRateLimitService.instance;
+  HastebinRateLimitService get _rateLimitService => rateLimitService ?? HastebinRateLimitService.instance;
 
   /// Uploads a list of items to Hastebin and returns the key
   /// Uses JSON encoding for robust data integrity
@@ -30,7 +26,7 @@ class HastebinStorageService {
     };
 
     final jsonContent = json.encode(data);
-    
+
     try {
       final key = await repository.createDocument(jsonContent);
       return key;
@@ -63,10 +59,10 @@ class HastebinStorageService {
     try {
       // Try to parse as JSON first (new format)
       final data = json.decode(content) as Map<String, dynamic>;
-      
+
       if (data['type'] == 'roulette_items' && data['items'] is List) {
         final items = (data['items'] as List).cast<String>();
-        
+
         // Validate checksum if present
         if (data['checksum'] != null) {
           final expectedChecksum = _calculateChecksum(items);
@@ -74,7 +70,7 @@ class HastebinStorageService {
             throw const HastebinException('Data integrity check failed - checksum mismatch');
           }
         }
-        
+
         return items;
       } else {
         throw const HastebinException('Invalid data format - not roulette items');
@@ -89,11 +85,10 @@ class HastebinStorageService {
   List<String> _parseLegacyContent(String content) {
     // If content looks like JSON but failed to parse, it's truly invalid
     final trimmed = content.trim();
-    if ((trimmed.startsWith('{') && trimmed.endsWith('}')) ||
-        (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+    if ((trimmed.startsWith('{') && trimmed.endsWith('}')) || (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
       throw const HastebinException('Invalid JSON format');
     }
-    
+
     // Check if it's the example format from hastebin_usage_example.dart
     if (content.startsWith('Roulette Items:')) {
       final lines = content.split('\n');
@@ -102,24 +97,21 @@ class HastebinStorageService {
           .map((line) => line.trim().substring(2))
           .where((item) => item.isNotEmpty)
           .toList();
-      
+
       if (items.isEmpty) {
         throw const HastebinException('No valid items found in legacy format');
       }
-      
+
       return items;
     }
-    
+
     // Try to parse as simple line-separated format
-    final lines = content.split('\n')
-        .map((line) => line.trim())
-        .where((line) => line.isNotEmpty)
-        .toList();
-    
+    final lines = content.split('\n').map((line) => line.trim()).where((line) => line.isNotEmpty).toList();
+
     if (lines.isEmpty) {
       throw const HastebinException('No valid items found in content');
     }
-    
+
     return lines;
   }
 

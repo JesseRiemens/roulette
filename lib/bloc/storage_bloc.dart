@@ -10,15 +10,15 @@ part 'storage_bloc.freezed.dart';
 part 'storage_bloc.g.dart';
 
 class StorageCubit extends HydratedCubit<StoredItems> {
-  StorageCubit({HastebinStorageService? hastebinStorageService}) 
-      : _hastebinStorageService = hastebinStorageService ?? const HastebinStorageService(),
-        super(StoredItems.initial);
+  StorageCubit({HastebinStorageService? hastebinStorageService})
+    : _hastebinStorageService = hastebinStorageService ?? const HastebinStorageService(),
+      super(StoredItems.initial);
 
   final HastebinStorageService _hastebinStorageService;
 
-  StorageCubit.web({HastebinStorageService? hastebinStorageService}) 
-      : _hastebinStorageService = hastebinStorageService ?? const HastebinStorageService(),
-        super(StoredItems.initial) {
+  StorageCubit.web({HastebinStorageService? hastebinStorageService})
+    : _hastebinStorageService = hastebinStorageService ?? const HastebinStorageService(),
+      super(StoredItems.initial) {
     _loadFromUri();
   }
 
@@ -56,23 +56,19 @@ class StorageCubit extends HydratedCubit<StoredItems> {
       final items = await _hastebinStorageService.downloadItems(hastebinId);
       emit(state.copyWith(items: items, isLoading: false, hastebinId: hastebinId));
     } on HastebinDocumentNotFoundException {
-      emit(state.copyWith(
-        items: [], 
-        isLoading: false, 
-        error: 'Shared items not found. The link may be expired or invalid.'
-      ));
+      emit(
+        state.copyWith(
+          items: [],
+          isLoading: false,
+          error: 'Shared items not found. The link may be expired or invalid.',
+        ),
+      );
     } on HastebinException catch (e) {
-      emit(state.copyWith(
-        items: [], 
-        isLoading: false, 
-        error: 'Failed to load shared items: ${e.message}'
-      ));
+      emit(state.copyWith(items: [], isLoading: false, error: 'Failed to load shared items: ${e.message}'));
     } catch (e) {
-      emit(state.copyWith(
-        items: [], 
-        isLoading: false, 
-        error: 'Unexpected error loading shared items: ${e.toString()}'
-      ));
+      emit(
+        state.copyWith(items: [], isLoading: false, error: 'Unexpected error loading shared items: ${e.toString()}'),
+      );
     }
   }
 
@@ -80,10 +76,10 @@ class StorageCubit extends HydratedCubit<StoredItems> {
     emit(state.copyWith(items: items, error: null));
     // ignore: avoid_print
     print('[StorageCubit] Saving items: $items');
-    
+
     // Clear any Hastebin ID since items changed locally
     emit(state.copyWith(hastebinId: null));
-    
+
     // Update legacy URL parameters for backward compatibility
     uriStorage.storeQueryParameters(state.toUriQueryParameters);
   }
@@ -92,33 +88,21 @@ class StorageCubit extends HydratedCubit<StoredItems> {
   Future<String> shareItems() async {
     try {
       emit(state.copyWith(isUploading: true, error: null));
-      
+
       final hastebinId = await _hastebinStorageService.uploadItems(state.items);
-      
+
       // Create shareable URL with Hastebin ID
       final currentUri = uriStorage.uri;
-      final shareableUri = currentUri.replace(
-        queryParameters: {'h': hastebinId},
-      );
-      
-      emit(state.copyWith(
-        isUploading: false, 
-        hastebinId: hastebinId,
-        lastSharedUrl: shareableUri.toString()
-      ));
-      
+      final shareableUri = currentUri.replace(queryParameters: {'h': hastebinId});
+
+      emit(state.copyWith(isUploading: false, hastebinId: hastebinId, lastSharedUrl: shareableUri.toString()));
+
       return shareableUri.toString();
     } on HastebinException catch (e) {
-      emit(state.copyWith(
-        isUploading: false, 
-        error: 'Failed to share items: ${e.message}'
-      ));
+      emit(state.copyWith(isUploading: false, error: 'Failed to share items: ${e.message}'));
       rethrow;
     } catch (e) {
-      emit(state.copyWith(
-        isUploading: false, 
-        error: 'Unexpected error sharing items: ${e.toString()}'
-      ));
+      emit(state.copyWith(isUploading: false, error: 'Unexpected error sharing items: ${e.toString()}'));
       rethrow;
     }
   }
@@ -126,15 +110,10 @@ class StorageCubit extends HydratedCubit<StoredItems> {
   /// Create shareable URL with items encoded in URL parameters (legacy method)
   String shareItemsViaUrl() {
     final currentUri = uriStorage.uri;
-    final shareableUri = currentUri.replace(
-      queryParameters: state.toUriQueryParameters,
-    );
-    
-    emit(state.copyWith(
-      lastSharedUrl: shareableUri.toString(),
-      error: null
-    ));
-    
+    final shareableUri = currentUri.replace(queryParameters: state.toUriQueryParameters);
+
+    emit(state.copyWith(lastSharedUrl: shareableUri.toString(), error: null));
+
     return shareableUri.toString();
   }
 

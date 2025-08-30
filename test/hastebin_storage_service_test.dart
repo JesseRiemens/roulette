@@ -104,10 +104,7 @@ void main() {
       mockRepository = MockHastebinRepository();
       mockRateLimitService = MockRateLimitService.instance;
       mockRateLimitService.reset();
-      service = HastebinStorageService(
-        repository: mockRepository,
-        rateLimitService: mockRateLimitService,
-      );
+      service = HastebinStorageService(repository: mockRepository, rateLimitService: mockRateLimitService);
     });
 
     tearDown(() {
@@ -118,12 +115,12 @@ void main() {
     group('uploadItems', () {
       test('uploads items with proper JSON format', () async {
         final items = ['Apple', 'Banana', 'Cherry'];
-        
+
         final key = await service.uploadItems(items);
-        
+
         expect(key, isNotEmpty);
         expect(mockRepository.lastStoredContent, isNotNull);
-        
+
         final content = json.decode(mockRepository.lastStoredContent!) as Map<String, dynamic>;
         expect(content['version'], equals('1.0'));
         expect(content['type'], equals('roulette_items'));
@@ -134,9 +131,9 @@ void main() {
 
       test('includes checksum for data integrity', () async {
         final items = ['Test1', 'Test2'];
-        
+
         await service.uploadItems(items);
-        
+
         final content = json.decode(mockRepository.lastStoredContent!) as Map<String, dynamic>;
         final expectedChecksum = items.join('|').hashCode.abs().toString();
         expect(content['checksum'], equals(expectedChecksum));
@@ -144,9 +141,9 @@ void main() {
 
       test('handles empty items list', () async {
         final items = <String>[];
-        
+
         final key = await service.uploadItems(items);
-        
+
         expect(key, isNotEmpty);
         final content = json.decode(mockRepository.lastStoredContent!) as Map<String, dynamic>;
         expect(content['items'], equals([]));
@@ -154,9 +151,9 @@ void main() {
 
       test('handles items with special characters', () async {
         final items = ['Special: éñ 中文', 'Unicode: 🎯🎲', 'Quotes: "test"'];
-        
+
         final key = await service.uploadItems(items);
-        
+
         expect(key, isNotEmpty);
         final content = json.decode(mockRepository.lastStoredContent!) as Map<String, dynamic>;
         expect(content['items'], equals(items));
@@ -164,29 +161,26 @@ void main() {
 
       test('respects rate limiting', () async {
         mockRateLimitService.setWaitBehavior(true, const Duration(milliseconds: 50));
-        
+
         final stopwatch = Stopwatch()..start();
         await service.uploadItems(['Test']);
         stopwatch.stop();
-        
+
         expect(stopwatch.elapsedMilliseconds, greaterThanOrEqualTo(45));
         expect(mockRateLimitService.currentRequestCount, equals(1));
       });
 
       test('throws HastebinException on repository error', () async {
         mockRepository.setNextException(const HastebinException('Test error'));
-        
-        expect(
-          () => service.uploadItems(['Test']),
-          throwsA(isA<HastebinException>()),
-        );
+
+        expect(() => service.uploadItems(['Test']), throwsA(isA<HastebinException>()));
       });
 
       test('handles large payload', () async {
         final items = List.generate(1000, (i) => 'Item $i with some longer text to test payload size');
-        
+
         final key = await service.uploadItems(items);
-        
+
         expect(key, isNotEmpty);
         final content = json.decode(mockRepository.lastStoredContent!) as Map<String, dynamic>;
         expect(content['items'], hasLength(1000));
@@ -204,11 +198,11 @@ void main() {
           'items': originalItems,
           'checksum': checksum,
         };
-        
+
         mockRepository._storage['test_key'] = json.encode(jsonData);
-        
+
         final items = await service.downloadItems('test_key');
-        
+
         expect(items, equals(originalItems));
       });
 
@@ -220,9 +214,9 @@ void main() {
           'items': ['Apple', 'Banana'],
           'checksum': 'invalid_checksum',
         };
-        
+
         mockRepository._storage['test_key'] = json.encode(jsonData);
-        
+
         expect(
           () => service.downloadItems('test_key'),
           throwsA(isA<HastebinException>().having((e) => e.message, 'message', contains('checksum mismatch'))),
@@ -235,11 +229,11 @@ void main() {
 - Apple
 - Banana
 - Cherry''';
-        
+
         mockRepository._storage['test_key'] = legacyContent;
-        
+
         final items = await service.downloadItems('test_key');
-        
+
         expect(items, equals(['Apple', 'Banana', 'Cherry']));
       });
 
@@ -249,11 +243,11 @@ Banana
 Cherry
 
 Orange''';
-        
+
         mockRepository._storage['test_key'] = legacyContent;
-        
+
         final items = await service.downloadItems('test_key');
-        
+
         expect(items, equals(['Apple', 'Banana', 'Cherry', 'Orange']));
       });
 
@@ -265,29 +259,23 @@ Orange''';
           'items': ['Test'],
           'checksum': 'Test'.hashCode.abs().toString(),
         });
-        
+
         final stopwatch = Stopwatch()..start();
         await service.downloadItems('test_key');
         stopwatch.stop();
-        
+
         expect(stopwatch.elapsedMilliseconds, greaterThanOrEqualTo(45));
         expect(mockRateLimitService.currentRequestCount, equals(1));
       });
 
       test('throws HastebinDocumentNotFoundException for missing documents', () async {
-        expect(
-          () => service.downloadItems('nonexistent_key'),
-          throwsA(isA<HastebinDocumentNotFoundException>()),
-        );
+        expect(() => service.downloadItems('nonexistent_key'), throwsA(isA<HastebinDocumentNotFoundException>()));
       });
 
       test('throws HastebinException for invalid JSON', () async {
         mockRepository._storage['test_key'] = '{"invalid": json}';
-        
-        expect(
-          () => service.downloadItems('test_key'),
-          throwsA(isA<HastebinException>()),
-        );
+
+        expect(() => service.downloadItems('test_key'), throwsA(isA<HastebinException>()));
       });
 
       test('throws HastebinException for wrong data type', () async {
@@ -296,9 +284,9 @@ Orange''';
           'type': 'wrong_type',
           'items': ['Apple'],
         };
-        
+
         mockRepository._storage['test_key'] = json.encode(jsonData);
-        
+
         expect(
           () => service.downloadItems('test_key'),
           throwsA(isA<HastebinException>().having((e) => e.message, 'message', contains('not roulette items'))),
@@ -307,39 +295,36 @@ Orange''';
 
       test('handles empty content gracefully', () async {
         mockRepository._storage['test_key'] = '';
-        
-        expect(
-          () => service.downloadItems('test_key'),
-          throwsA(isA<HastebinException>()),
-        );
+
+        expect(() => service.downloadItems('test_key'), throwsA(isA<HastebinException>()));
       });
     });
 
     group('end-to-end flow', () {
       test('upload and download round trip preserves data', () async {
         final originalItems = ['🎯', 'Test "quoted"', 'Special éñ 中文', 'Multi\nLine\nItem'];
-        
+
         final key = await service.uploadItems(originalItems);
         final downloadedItems = await service.downloadItems(key);
-        
+
         expect(downloadedItems, equals(originalItems));
       });
 
       test('handles empty list round trip', () async {
         final originalItems = <String>[];
-        
+
         final key = await service.uploadItems(originalItems);
         final downloadedItems = await service.downloadItems(key);
-        
+
         expect(downloadedItems, equals(originalItems));
       });
 
       test('handles large data set round trip', () async {
         final originalItems = List.generate(500, (i) => 'Item $i: ${DateTime.now().toIso8601String()}');
-        
+
         final key = await service.uploadItems(originalItems);
         final downloadedItems = await service.downloadItems(key);
-        
+
         expect(downloadedItems, equals(originalItems));
       });
     });
@@ -347,7 +332,7 @@ Orange''';
     group('rate limit status', () {
       test('reports correct status', () {
         final status = service.getRateLimitStatus();
-        
+
         expect(status.maxRequests, equals(100));
         expect(status.currentRequests, equals(0));
         expect(status.waitTime, isNull);
@@ -355,9 +340,9 @@ Orange''';
 
       test('reports wait time when rate limited', () {
         mockRateLimitService.setWaitBehavior(true, const Duration(seconds: 30));
-        
+
         final status = service.getRateLimitStatus();
-        
+
         expect(status.waitTime, isNotNull);
         expect(status.waitTime!.inSeconds, equals(30));
       });

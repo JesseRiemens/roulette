@@ -67,14 +67,11 @@ void main() {
 
     testWidgets('Complete workflow: add items, share, and load from URL', (WidgetTester tester) async {
       final cubit = StorageCubit(hastebinStorageService: mockService);
-      
+
       // Build the app
       await tester.pumpWidget(
         MaterialApp(
-          home: BlocProvider.value(
-            value: cubit,
-            child: const RouletteScreen(),
-          ),
+          home: BlocProvider.value(value: cubit, child: const RouletteScreen()),
         ),
       );
 
@@ -139,10 +136,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: BlocProvider.value(
-            value: cubit,
-            child: const RouletteScreen(),
-          ),
+          home: BlocProvider.value(value: cubit, child: const RouletteScreen()),
         ),
       );
 
@@ -169,16 +163,13 @@ void main() {
 
     testWidgets('Loading state: show loading indicator when fetching shared items', (WidgetTester tester) async {
       final cubit = StorageCubit(hastebinStorageService: mockService);
-      
+
       // Pre-populate the mock storage
       mockService._storage['test123'] = ['Shared Item 1', 'Shared Item 2'];
 
       await tester.pumpWidget(
         MaterialApp(
-          home: BlocProvider.value(
-            value: cubit,
-            child: const RouletteScreen(),
-          ),
+          home: BlocProvider.value(value: cubit, child: const RouletteScreen()),
         ),
       );
 
@@ -206,10 +197,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: BlocProvider.value(
-            value: cubit,
-            child: const RouletteScreen(),
-          ),
+          home: BlocProvider.value(value: cubit, child: const RouletteScreen()),
         ),
       );
 
@@ -234,10 +222,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: BlocProvider.value(
-            value: cubit,
-            child: const RouletteScreen(),
-          ),
+          home: BlocProvider.value(value: cubit, child: const RouletteScreen()),
         ),
       );
 
@@ -260,10 +245,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: BlocProvider.value(
-            value: cubit,
-            child: const RouletteScreen(),
-          ),
+          home: BlocProvider.value(value: cubit, child: const RouletteScreen()),
         ),
       );
 
@@ -298,10 +280,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: BlocProvider.value(
-            value: cubit,
-            child: const RouletteScreen(),
-          ),
+          home: BlocProvider.value(value: cubit, child: const RouletteScreen()),
         ),
       );
 
@@ -324,4 +303,3 @@ void main() {
     });
   });
 }
-
