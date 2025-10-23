@@ -65,9 +65,11 @@ class RouletteScreen extends StatelessWidget {
         builder: (context, state) {
           return Column(
             children: [
-              // Two buttons side by side
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              // Two buttons side by side - wrap for small screens
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 12.0,
+                runSpacing: 8.0,
                 children: [
                   // Share via Hastebin button
                   ElevatedButton.icon(
@@ -97,7 +99,6 @@ class RouletteScreen extends StatelessWidget {
                             }
                           },
                   ),
-                  const SizedBox(width: 12),
                   // Share via URL button
                   ElevatedButton.icon(
                     icon: const Icon(Icons.link),

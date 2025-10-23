@@ -1,10 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:webroulette/bloc/storage_bloc.dart';
 import 'package:webroulette/screens/roulette_screen.dart';
 import 'package:webroulette/data/hastebin_storage_service.dart';
 import 'package:webroulette/data/hastebin_rate_limit_service.dart';
+import 'package:webroulette/l10n/app_localizations.dart';
 import 'package:hastebin_client/hastebin_client.dart';
 import 'test_helpers.dart';
 
@@ -71,14 +73,23 @@ void main() {
       // Build the app
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            AppLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          locale: const Locale('en'),
           home: BlocProvider.value(value: cubit, child: const RouletteScreen()),
         ),
       );
 
       // Verify initial state - button should be disabled for empty list
-      final shareButton = find.text('Share Items');
+      final shareButton = find.text('Share via Hastebin');
       expect(shareButton, findsOneWidget);
-      expect(tester.widget<ElevatedButton>(find.byType(ElevatedButton)).onPressed, isNull);
+      // Both share buttons should be disabled for empty list
+      final hastebinButton = find.ancestor(of: find.text('Share via Hastebin'), matching: find.byType(ElevatedButton));
+      expect(tester.widget<ElevatedButton>(hastebinButton).onPressed, isNull);
 
       // Add first item
       await tester.enterText(find.byType(TextField), 'Apple');
@@ -94,8 +105,8 @@ void main() {
       expect(find.text('1: Apple'), findsOneWidget);
       expect(find.text('2: Banana'), findsOneWidget);
 
-      // Button should now be enabled
-      expect(tester.widget<ElevatedButton>(find.byType(ElevatedButton)).onPressed, isNotNull);
+      // Hastebin button should now be enabled
+      expect(tester.widget<ElevatedButton>(hastebinButton).onPressed, isNotNull);
 
       // Tap the share button
       await tester.tap(shareButton);
@@ -108,7 +119,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 200));
 
       // Should show success state
-      expect(find.text('Share Items'), findsOneWidget);
+      expect(find.text('Share via Hastebin'), findsOneWidget);
       expect(find.text('Shareable URL copied to clipboard!'), findsOneWidget);
 
       // Verify the cubit has a hastebin ID
@@ -136,6 +147,13 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            AppLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          locale: const Locale('en'),
           home: BlocProvider.value(value: cubit, child: const RouletteScreen()),
         ),
       );
@@ -149,7 +167,7 @@ void main() {
       failingService._shouldFail = true;
 
       // Tap share button
-      await tester.tap(find.text('Share Items'));
+      await tester.tap(find.text('Share via Hastebin'));
       await tester.pump();
 
       // Wait for error to propagate
@@ -169,6 +187,13 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            AppLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          locale: const Locale('en'),
           home: BlocProvider.value(value: cubit, child: const RouletteScreen()),
         ),
       );
@@ -197,6 +222,13 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            AppLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          locale: const Locale('en'),
           home: BlocProvider.value(value: cubit, child: const RouletteScreen()),
         ),
       );
@@ -222,6 +254,13 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            AppLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          locale: const Locale('en'),
           home: BlocProvider.value(value: cubit, child: const RouletteScreen()),
         ),
       );
@@ -231,7 +270,7 @@ void main() {
       expect(find.text('2: Legacy Item 2'), findsOneWidget);
 
       // Share items (this will use Hastebin)
-      await tester.tap(find.text('Share Items'));
+      await tester.tap(find.text('Share via Hastebin'));
       await tester.pump(const Duration(milliseconds: 200));
 
       // Verify shared successfully
@@ -245,28 +284,39 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            AppLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          locale: const Locale('en'),
           home: BlocProvider.value(value: cubit, child: const RouletteScreen()),
         ),
       );
 
-      // Button should be disabled for empty items
-      final shareButton = find.byType(ElevatedButton);
-      expect(tester.widget<ElevatedButton>(shareButton).onPressed, isNull);
+      // Both share buttons should be disabled for empty items
+      final hastebinButton = find.ancestor(of: find.text('Share via Hastebin'), matching: find.byType(ElevatedButton));
+      final urlButton = find.ancestor(of: find.text('Share via URL'), matching: find.byType(ElevatedButton));
+      expect(tester.widget<ElevatedButton>(hastebinButton).onPressed, isNull);
+      expect(tester.widget<ElevatedButton>(urlButton).onPressed, isNull);
 
       // Add an item
       await tester.enterText(find.byType(TextField), 'First Item');
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pump();
 
-      // Button should now be enabled
-      expect(tester.widget<ElevatedButton>(shareButton).onPressed, isNotNull);
+      // Both buttons should now be enabled
+      expect(tester.widget<ElevatedButton>(hastebinButton).onPressed, isNotNull);
+      expect(tester.widget<ElevatedButton>(urlButton).onPressed, isNotNull);
 
       // Remove the item
       await tester.tap(find.byIcon(Icons.remove_circle_outline_sharp));
       await tester.pump();
 
-      // Button should be disabled again
-      expect(tester.widget<ElevatedButton>(shareButton).onPressed, isNull);
+      // Both buttons should be disabled again
+      expect(tester.widget<ElevatedButton>(hastebinButton).onPressed, isNull);
+      expect(tester.widget<ElevatedButton>(urlButton).onPressed, isNull);
 
       await cubit.close();
     });
@@ -280,12 +330,19 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            AppLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          locale: const Locale('en'),
           home: BlocProvider.value(value: cubit, child: const RouletteScreen()),
         ),
       );
 
       // Share the large dataset
-      await tester.tap(find.text('Share Items'));
+      await tester.tap(find.text('Share via Hastebin'));
       await tester.pump(const Duration(milliseconds: 200));
 
       // Verify shared successfully
