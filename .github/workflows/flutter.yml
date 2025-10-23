@@ -29,6 +29,7 @@ jobs:
       LC_ALL: en_US.UTF-8
       LANG: en_US.UTF-8
       LANGUAGE: en_US.UTF-8
+      HASTEBIN_API_KEY: ${{ secrets.HASTEBIN_API_KEY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3

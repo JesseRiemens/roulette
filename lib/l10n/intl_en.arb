@@ -19,5 +19,9 @@
   "spin": "Spin",
   "@spin": {},
   "spinTheWheel": "Spin the wheel!",
-  "@spinTheWheel": {}
+  "@spinTheWheel": {},
+  "shareViaHastebin": "Share via Hastebin",
+  "@shareViaHastebin": {},
+  "shareViaUrl": "Share via URL",
+  "@shareViaUrl": {}
 }

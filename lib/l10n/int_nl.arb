@@ -6,5 +6,7 @@
     "resultSpinResult": "Resultaat: {result}",
     "spinTheWheel": "Draai aan het wiel!",
     "spin": "Draai",
-    "enterAnItem": "Voer een item in"
+    "enterAnItem": "Voer een item in",
+    "shareViaHastebin": "Deel via Hastebin",
+    "shareViaUrl": "Deel via URL"
 }
