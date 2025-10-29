@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:webroulette/bloc/storage_bloc.dart';
 import 'package:webroulette/l10n/app_localizations.dart';
 import 'package:webroulette/screens/roulette_screen.dart';
+import 'package:webroulette/screens/copyright_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +34,15 @@ class MainApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark),
       ),
       title: 'Roulette',
-      onGenerateRoute: (settings) => CustomPageRoute(builder: (context) => const RouletteScreen(), settings: settings),
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/copyright':
+            return CustomPageRoute(builder: (context) => const CopyrightScreen(), settings: settings);
+          case '/':
+          default:
+            return CustomPageRoute(builder: (context) => const RouletteScreen(), settings: settings);
+        }
+      },
       initialRoute: '',
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
         GlobalMaterialLocalizations.delegate,

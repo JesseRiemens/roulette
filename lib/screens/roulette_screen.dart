@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webroulette/bloc/storage_bloc.dart';
+import 'package:webroulette/l10n/app_localizations.dart';
 import 'package:webroulette/widgets/editing_widget.dart';
 import 'package:webroulette/widgets/roulette_widget.dart';
 
@@ -29,8 +30,8 @@ class RouletteScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   const SizedBox(height: 40),
-                  // Copy URL button
-                  _buildCopyButton(context),
+                  // Top action buttons
+                  _buildTopActionButtons(context),
                   _buildEditWidget(rouletteItems, context),
                   if (rouletteItems.length > 1) RouletteWidget(rouletteItems: rouletteItems),
                 ],
@@ -57,20 +58,33 @@ class RouletteScreen extends StatelessWidget {
     );
   }
 
-  Padding _buildCopyButton(BuildContext context) {
+  Widget _buildTopActionButtons(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
-      child: ElevatedButton.icon(
-        icon: const Icon(Icons.copy),
-        label: const Text('Copy URL'),
-        onPressed: () {
-          final uri = context.read<StorageCubit>().uriWithData;
-          Clipboard.setData(ClipboardData(text: uri.toString())).then(
-            (_) => context.mounted
-                ? ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('URL copied to clipboard!')))
-                : null,
-          );
-        },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton.icon(
+            icon: const Icon(Icons.copy),
+            label: const Text('Copy URL'),
+            onPressed: () {
+              final uri = context.read<StorageCubit>().uriWithData;
+              Clipboard.setData(ClipboardData(text: uri.toString())).then(
+                (_) => context.mounted
+                    ? ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('URL copied to clipboard!')))
+                    : null,
+              );
+            },
+          ),
+          const SizedBox(width: 16),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.info_outline),
+            label: Text(AppLocalizations.of(context)!.copyright),
+            onPressed: () {
+              Navigator.of(context).pushNamed('/copyright');
+            },
+          ),
+        ],
       ),
     );
   }
