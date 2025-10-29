@@ -1,0 +1,16 @@
+{
+    "@@locale": "nl",
+    "@@context": "intl",
+    "beCreative": "Wees creatief :P",
+    "add": "Voeg toe",
+    "resultSpinResult": "Resultaat: {result}",
+    "spinTheWheel": "Draai aan het wiel!",
+    "spin": "Draai",
+    "enterAnItem": "Voer een item in",
+    "copyright": "Auteursrecht",
+    "copyrightTitle": "Auteursrecht Informatie",
+    "copyrightDescription": "© 2024 Roulette Webapplicatie. Dit is een open-source project gebouwd met Flutter. De applicatie helpt gebruikers bij het maken van beslissingen via een digitale roulette interface.",
+    "thirdPartyLicensesTitle": "Licenties van Derden",
+    "thirdPartyLicensesDescription": "Deze applicatie gebruikt verschillende open-source bibliotheken en frameworks. Klik op de knop hieronder om gedetailleerde licentie-informatie voor alle afhankelijkheden te bekijken.",
+    "viewLicenses": "Bekijk Licenties"
+}

@@ -19,5 +19,17 @@
   "spin": "Spin",
   "@spin": {},
   "spinTheWheel": "Spin the wheel!",
-  "@spinTheWheel": {}
+  "@spinTheWheel": {},
+  "copyright": "Copyright",
+  "@copyright": {},
+  "copyrightTitle": "Copyright Information",
+  "@copyrightTitle": {},
+  "copyrightDescription": "© 2024 Roulette Web Application. This is an open-source project built with Flutter. The application helps users make decisions through a digital roulette wheel interface.",
+  "@copyrightDescription": {},
+  "thirdPartyLicensesTitle": "Third-Party Licenses",
+  "@thirdPartyLicensesTitle": {},
+  "thirdPartyLicensesDescription": "This application uses various open-source libraries and frameworks. Click the button below to view detailed license information for all dependencies.",
+  "@thirdPartyLicensesDescription": {},
+  "viewLicenses": "View Licenses",
+  "@viewLicenses": {}
 }
