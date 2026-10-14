@@ -23,7 +23,7 @@ concurrency:
 jobs:
   build:
     # runs-on: macos-latest
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container: ghcr.io/cirruslabs/flutter:stable
     env:
       LC_ALL: en_US.UTF-8
@@ -31,7 +31,7 @@ jobs:
       LANGUAGE: en_US.UTF-8
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Install dependencies
         run: flutter pub get    
@@ -52,10 +52,10 @@ jobs:
           done
 
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload Artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: _site/
         
@@ -75,11 +75,11 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     # Specify runner + deployment step
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action
+        uses: actions/deploy-pages@v5 # or specific "vX.X.X" version tag for this action
         with: 
           artifact_name: github-pages
           
