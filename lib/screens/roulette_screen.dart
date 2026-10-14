@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webroulette/bloc/storage_bloc.dart';
+import 'package:webroulette/data/markdown_items.dart';
+import 'package:webroulette/l10n/app_localizations.dart';
 import 'package:webroulette/widgets/editing_widget.dart';
+import 'package:webroulette/widgets/markdown_import_dialog.dart';
 import 'package:webroulette/widgets/roulette_widget.dart';
 
 class RouletteScreen extends StatelessWidget {
@@ -31,6 +34,7 @@ class RouletteScreen extends StatelessWidget {
                   const SizedBox(height: 40),
                   // Copy URL button
                   _buildCopyButton(context),
+                  _buildLlmButtons(context),
                   _buildEditWidget(rouletteItems, context),
                   if (rouletteItems.length > 1) RouletteWidget(rouletteItems: rouletteItems),
                 ],
@@ -71,6 +75,44 @@ class RouletteScreen extends StatelessWidget {
                 : null,
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildLlmButtons(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        alignment: WrapAlignment.center,
+        children: [
+          OutlinedButton.icon(
+            key: const ValueKey('copy_for_llm_button'),
+            icon: const Icon(Icons.smart_toy_outlined),
+            label: Text(l10n.copyForLlm),
+            onPressed: () async {
+              final cubit = context.read<StorageCubit>();
+              final messenger = ScaffoldMessenger.of(context);
+              final text = formatItemsAsMarkdown(cubit.state.items);
+              final message = l10n.copiedForLlm;
+              await Clipboard.setData(ClipboardData(text: text));
+              messenger.showSnackBar(SnackBar(content: Text(message)));
+            },
+          ),
+          OutlinedButton.icon(
+            key: const ValueKey('paste_from_llm_button'),
+            icon: const Icon(Icons.content_paste),
+            label: Text(l10n.pasteFromLlm),
+            onPressed: () async {
+              final cubit = context.read<StorageCubit>();
+              final result = await showMarkdownImportDialog(context);
+              if (result == null) return;
+              cubit.saveItems(result.replace ? result.items : [...cubit.state.items, ...result.items]);
+            },
+          ),
+        ],
       ),
     );
   }

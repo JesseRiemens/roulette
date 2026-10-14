@@ -19,5 +19,31 @@
   "spin": "Spin",
   "@spin": {},
   "spinTheWheel": "Spin the wheel!",
-  "@spinTheWheel": {}
+  "@spinTheWheel": {},
+  "copyForLlm": "Copy for LLM",
+  "@copyForLlm": {},
+  "pasteFromLlm": "Paste from LLM",
+  "@pasteFromLlm": {},
+  "pasteFromLlmTitle": "Paste from LLM",
+  "@pasteFromLlmTitle": {},
+  "pasteFromLlmHint": "Paste a Markdown list here",
+  "@pasteFromLlmHint": {},
+  "importPreviewCount": "{count, plural, =1{1 item found} other{{count} items found}}",
+  "@importPreviewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importNothingFound": "No list items found",
+  "@importNothingFound": {},
+  "replaceItems": "Replace",
+  "@replaceItems": {},
+  "addToExisting": "Add to existing",
+  "@addToExisting": {},
+  "cancel": "Cancel",
+  "@cancel": {},
+  "copiedForLlm": "List copied for LLM!",
+  "@copiedForLlm": {}
 }

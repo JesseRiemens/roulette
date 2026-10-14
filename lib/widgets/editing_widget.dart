@@ -154,9 +154,8 @@ class _EditingWidgetBody extends StatelessWidget {
       child: ReorderableListView(
         buildDefaultDragHandles: false,
         shrinkWrap: true,
-        onReorder: (int oldIndex, int newIndex) {
+        onReorderItem: (int oldIndex, int newIndex) {
           final newItems = List<String>.from(items);
-          if (newIndex > oldIndex) newIndex--;
           final item = newItems.removeAt(oldIndex);
           newItems.insert(newIndex, item);
           onItemsChanged(newItems);

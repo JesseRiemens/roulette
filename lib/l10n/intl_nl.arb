@@ -1,0 +1,20 @@
+{
+  "@@locale": "nl",
+  "@@context": "intl",
+  "beCreative": "Wees creatief :P",
+  "add": "Voeg toe",
+  "resultSpinResult": "Resultaat: {result}",
+  "spinTheWheel": "Draai aan het wiel!",
+  "spin": "Draai",
+  "enterAnItem": "Voer een item in",
+  "copyForLlm": "Kopieer voor LLM",
+  "pasteFromLlm": "Plak van LLM",
+  "pasteFromLlmTitle": "Plak van LLM",
+  "pasteFromLlmHint": "Plak hier een Markdown-lijst",
+  "importPreviewCount": "{count, plural, =1{1 item gevonden} other{{count} items gevonden}}",
+  "importNothingFound": "Geen lijstitems gevonden",
+  "replaceItems": "Vervangen",
+  "addToExisting": "Toevoegen aan bestaande",
+  "cancel": "Annuleren",
+  "copiedForLlm": "Lijst gekopieerd voor LLM!"
+}
