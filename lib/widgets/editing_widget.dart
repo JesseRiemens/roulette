@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:webroulette/l10n/app_localizations.dart';
 
 class EditingWidget extends StatefulWidget {
-  const EditingWidget({Key? key, required this.items, required this.onItemsChanged, required this.backgroundColor})
-    : super(key: key);
+  const EditingWidget({super.key, required this.items, required this.onItemsChanged, required this.backgroundColor});
 
   final List<String> items;
   final Function(List<String>) onItemsChanged;
@@ -59,13 +58,12 @@ class _EditingWidgetState extends State<EditingWidget> with AutomaticKeepAliveCl
 // Move _EditingWidgetBody to top level
 class _EditingWidgetBody extends StatelessWidget {
   const _EditingWidgetBody({
-    Key? key,
     required this.items,
     required this.onItemsChanged,
     required this.backgroundColor,
     required this.textController,
     required this.focusNode,
-  }) : super(key: key);
+  });
 
   final List<String> items;
   final Function(List<String>) onItemsChanged;

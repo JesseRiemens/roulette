@@ -54,8 +54,8 @@ class MainApp extends StatelessWidget {
   }
 }
 
-class CustomPageRoute extends MaterialPageRoute {
-  CustomPageRoute({builder, settings}) : super(builder: builder, settings: settings);
+class CustomPageRoute extends MaterialPageRoute<void> {
+  CustomPageRoute({required super.builder, super.settings});
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 0);

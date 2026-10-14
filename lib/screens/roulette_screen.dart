@@ -9,7 +9,7 @@ import 'package:webroulette/widgets/markdown_import_dialog.dart';
 import 'package:webroulette/widgets/roulette_widget.dart';
 
 class RouletteScreen extends StatelessWidget {
-  const RouletteScreen({Key? key}) : super(key: key);
+  const RouletteScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

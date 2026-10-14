@@ -3,7 +3,7 @@
 /// This package provides a simple interface for creating and retrieving
 /// text documents using the Hastebin service. It supports both web and
 /// non-web platforms with appropriate implementations.
-library hastebin_client;
+library;
 
 // Export the public API
 export 'src/hastebin_models.dart';

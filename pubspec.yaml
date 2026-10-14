@@ -12,16 +12,16 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   freezed_annotation: ^3.1.0
-  google_fonts: ^6.2.1
-  roulette: ^0.2.0
+  google_fonts: ^8.2.1
+  roulette: ^0.3.2
   flutter_localizations:
     sdk: flutter
   intl: any
   flutter_bloc: ^9.1.1
-  equatable: ^2.0.7
+  equatable: ^3.0.0
   js_interop: ^0.0.1
   json_annotation: ^4.9.0
-  hydrated_bloc: ^10.1.1
+  hydrated_bloc: ^11.0.0
   path_provider: ^2.1.5
   hastebin_client:
     path: packages/hastebin_client
@@ -30,7 +30,7 @@ dev_dependencies:
   build_runner: ^2.4.14
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^6.0.0
   freezed: ^3.2.0
   json_serializable: ^6.10.0
 

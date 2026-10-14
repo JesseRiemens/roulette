@@ -5,7 +5,7 @@ import 'package:roulette/roulette.dart';
 import 'package:webroulette/l10n/app_localizations.dart';
 
 class RouletteWidget extends StatefulWidget {
-  const RouletteWidget({Key? key, required this.rouletteItems}) : super(key: key);
+  const RouletteWidget({super.key, required this.rouletteItems});
 
   final List<String> rouletteItems;
 
@@ -63,7 +63,11 @@ class _RouletteWidgetState extends State<RouletteWidget> {
                   onPressed: () {
                     final target = Random().nextInt(widget.rouletteItems.length);
                     final duration = Duration(seconds: 3 + Random().nextInt(2));
-                    controller.rollTo(target, duration: duration, offset: Random().nextDouble());
+                    controller.rollTo(
+                      target,
+                      animationConfig: CurveAnimationConfig(duration: duration),
+                      offset: Random().nextDouble(),
+                    );
                     () async {
                       await Future.delayed(duration);
                       setState(() {
@@ -82,7 +86,7 @@ class _RouletteWidgetState extends State<RouletteWidget> {
 }
 
 class Arrow extends StatelessWidget {
-  const Arrow({Key? key}) : super(key: key);
+  const Arrow({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +103,7 @@ class _ArrowPainter extends CustomPainter {
 
   final Color color;
 
-  get _paint => Paint()
+  Paint get _paint => Paint()
     ..color = color
     ..style = PaintingStyle.fill;
 
